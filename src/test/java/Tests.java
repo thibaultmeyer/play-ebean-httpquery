@@ -129,7 +129,7 @@ public class Tests {
         args.put("available__eq", new String[]{"yes"});
         args.put("name__orderby", new String[]{"asc"});
         args.put("artist.name__ilike", new String[]{"STRATovarius"});
-        final Query<Album> query = PlayEbeanHttpQuery.buildQuery(Album.class, args, Tests.ebeanServer.createQuery(Album.class));
+        final Query<Album> query = PlayEbeanHttpQuery.buildQuery(Album.class, args);
         final List<Album> albums = query.findList();
 
         Assert.assertEquals(2, albums.size());

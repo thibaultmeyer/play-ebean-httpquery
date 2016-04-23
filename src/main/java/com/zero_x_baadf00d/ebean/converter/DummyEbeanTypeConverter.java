@@ -27,18 +27,18 @@ package com.zero_x_baadf00d.ebean.converter;
  * Dummy converter.
  *
  * @author Thibault Meyer
- * @version 16.04.22
+ * @version 16.04.23
  * @since 16.04.22
  */
-public final class DummyEbeanTypeConverter implements EbeanTypeConverter<Object> {
+public final class DummyEbeanTypeConverter implements EbeanTypeConverter<String> {
 
     @Override
-    public Object convert(final String obj) {
+    public String convert(final String obj) {
         return obj;
     }
 
     @Override
-    public Class<Object> getManagedObjectClass() {
-        return Object.class;
+    public Class<String> getManagedObjectClass() {
+        return String.class;
     }
 }

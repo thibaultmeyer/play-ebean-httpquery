@@ -39,7 +39,7 @@ import java.util.function.Function;
  * Helper to map flat query strings to Ebean filters.
  *
  * @author Thibault Meyer
- * @version 16.04.22
+ * @version 16.04.23
  * @since 16.04.22
  */
 public final class PlayEbeanHttpQuery {
@@ -82,6 +82,23 @@ public final class PlayEbeanHttpQuery {
      */
     public static <T extends Model> Query<T> buildQuery(final Class<T> c, final Http.Request request) {
         return PlayEbeanHttpQuery.buildQuery(c, request.queryString(), Ebean.createQuery(c));
+    }
+
+    /**
+     * Build a query for the given model class and arguments. The ending
+     * varargs is used to specify rules to allow or deny queries on fields.
+     *
+     * @param c       The model class that this method will create request for
+     * @param request The HTTP request
+     * @param query   The current query object
+     * @param <T>     Something that extends Model
+     * @return The Query
+     * @see Model
+     * @see Query
+     * @since 16.04.23
+     */
+    public static <T extends Model> Query<T> buildQuery(final Class<T> c, final Http.Request request, final Query<T> query) {
+        return PlayEbeanHttpQuery.buildQuery(c, request.queryString(), query);
     }
 
     /**
