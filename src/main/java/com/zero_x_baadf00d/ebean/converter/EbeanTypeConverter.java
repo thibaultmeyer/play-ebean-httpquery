@@ -48,5 +48,5 @@ public interface EbeanTypeConverter<T> {
      * @return The class of the managed object
      * @since 16.04.22
      */
-    Class<T> getManagedObjectClass();
+    Class<?> getManagedObjectClass();
 }
