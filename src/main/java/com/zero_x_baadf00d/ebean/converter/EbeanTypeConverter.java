@@ -40,7 +40,7 @@ public interface EbeanTypeConverter<T> {
      * @return The converted object
      * @since 16.04.22
      */
-    T convert(final String obj);
+    Object convert(final String obj);
 
     /**
      * Get class of the object managed by this converter.
@@ -48,5 +48,5 @@ public interface EbeanTypeConverter<T> {
      * @return The class of the managed object
      * @since 16.04.22
      */
-    Class<?> getManagedObjectClass();
+    Class<T> getManagedObjectClass();
 }
