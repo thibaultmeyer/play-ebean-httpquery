@@ -30,7 +30,7 @@ import org.joda.time.format.DateTimeFormat;
  * Converter for {@code DateTime}.
  *
  * @author Thibault Meyer
- * @version 16.04.22
+ * @version 16.04.25
  * @since 16.04.22
  */
 public final class DateTimeEbeanTypeConverter implements EbeanTypeConverter<DateTime> {

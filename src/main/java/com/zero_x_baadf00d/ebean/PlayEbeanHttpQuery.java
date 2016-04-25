@@ -40,7 +40,7 @@ import java.util.function.Function;
  * Helper to map flat query strings to Ebean filters.
  *
  * @author Thibault Meyer
- * @version 16.04.23
+ * @version 16.04.25
  * @since 16.04.22
  */
 public final class PlayEbeanHttpQuery {
@@ -171,7 +171,16 @@ public final class PlayEbeanHttpQuery {
                     if (eqValue instanceof DateTime) {
                         final DateTime dateTime = (DateTime) eqValue;
                         predicats.ge(foreignKeys, dateTime);
-                        predicats.le(foreignKeys, dateTime.plusMillis(999));
+                        DateTime upperDateTime = dateTime.plusMillis(999);
+                        if ((upperDateTime.getHourOfDay() == upperDateTime.getMinuteOfHour())
+                                && (upperDateTime.getMinuteOfHour() == upperDateTime.getSecondOfMinute())
+                                && (upperDateTime.getSecondOfMinute() == 0)) {
+                            upperDateTime = upperDateTime
+                                    .plusHours(23)
+                                    .plusMinutes(59)
+                                    .plusSeconds(59);
+                        }
+                        predicats.le(foreignKeys, upperDateTime);
                     } else {
                         predicats.eq(foreignKeys, eqValue);
                     }
@@ -189,7 +198,16 @@ public final class PlayEbeanHttpQuery {
                     final Object lteValue = EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue);
                     if (lteValue instanceof DateTime) {
                         final DateTime dateTime = (DateTime) lteValue;
-                        predicats.le(foreignKeys, dateTime.plusMillis(999));
+                        DateTime upperDateTime = dateTime.plusMillis(999);
+                        if ((upperDateTime.getHourOfDay() == upperDateTime.getMinuteOfHour())
+                                && (upperDateTime.getMinuteOfHour() == upperDateTime.getSecondOfMinute())
+                                && (upperDateTime.getSecondOfMinute() == 0)) {
+                            upperDateTime = upperDateTime
+                                    .plusHours(23)
+                                    .plusMinutes(59)
+                                    .plusSeconds(59);
+                        }
+                        predicats.le(foreignKeys, upperDateTime);
                     } else {
                         predicats.le(foreignKeys, lteValue);
                     }
