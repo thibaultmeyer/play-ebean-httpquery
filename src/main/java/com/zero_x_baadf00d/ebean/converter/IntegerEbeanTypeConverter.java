@@ -27,14 +27,18 @@ package com.zero_x_baadf00d.ebean.converter;
  * Converter for {@code Integer}.
  *
  * @author Thibault Meyer
- * @version 16.04.22
+ * @version 16.04.25
  * @since 16.04.22
  */
 public final class IntegerEbeanTypeConverter implements EbeanTypeConverter<Integer> {
 
     @Override
     public Integer convert(final String obj) {
-        return Integer.valueOf(obj);
+        try {
+            return Integer.valueOf(obj.replace(" ", ""));
+        } catch (NumberFormatException ignore) {
+            return null;
+        }
     }
 
     @Override

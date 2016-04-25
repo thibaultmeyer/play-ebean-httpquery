@@ -25,6 +25,9 @@ package com.zero_x_baadf00d.ebean.converter;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
+import org.joda.time.format.DateTimeParser;
 
 /**
  * Converter for {@code DateTime}.
@@ -35,15 +38,36 @@ import org.joda.time.format.DateTimeFormat;
  */
 public final class DateTimeEbeanTypeConverter implements EbeanTypeConverter<DateTime> {
 
+    /**
+     * Handle to the datetime formatter.
+     *
+     * @since 16.04.25
+     */
+    private final DateTimeFormatter dateTimeFormatter;
+
+    /**
+     * Build a default instance.
+     *
+     * @since 16.04.25
+     */
+    public DateTimeEbeanTypeConverter() {
+        final DateTimeParser[] formatPatterns = {
+                DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss").getParser(),
+                DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm").getParser(),
+                DateTimeFormat.forPattern("yyyy-MM-dd'T'HH").getParser(),
+                DateTimeFormat.forPattern("yyyy-MM-dd").getParser(),
+        };
+        this.dateTimeFormatter = new DateTimeFormatterBuilder().append(null, formatPatterns).toFormatter().withZoneUTC();
+    }
+
     @Override
-    public DateTime convert(final String obj) {
-        final DateTime dateTime;
-        if (obj.length() == 10) {
-            dateTime = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC().parseDateTime(obj);
-        } else {
-            dateTime = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss").withZoneUTC().parseDateTime(obj);
+    public Object convert(final String obj) {
+        try {
+            final DateTime dateTime = this.dateTimeFormatter.parseDateTime(obj);
+            return dateTime.minusMillis(dateTime.getMillisOfSecond());
+        } catch (IllegalArgumentException ignore) {
+            return null;
         }
-        return dateTime.minusMillis(dateTime.getMillisOfSecond());
     }
 
     @Override

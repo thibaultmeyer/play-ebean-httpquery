@@ -27,14 +27,18 @@ package com.zero_x_baadf00d.ebean.converter;
  * Converter for {@code Long}.
  *
  * @author Thibault Meyer
- * @version 16.04.22
+ * @version 16.04.25
  * @since 16.04.22
  */
 public final class LongEbeanTypeConverter implements EbeanTypeConverter<Long> {
 
     @Override
     public Long convert(final String obj) {
-        return Long.valueOf(obj);
+        try {
+            return Long.valueOf(obj.replace(" ", ""));
+        } catch (NumberFormatException ignore) {
+            return null;
+        }
     }
 
     @Override

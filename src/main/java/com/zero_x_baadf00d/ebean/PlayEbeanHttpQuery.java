@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Helper to map flat query strings to Ebean filters.
@@ -169,17 +168,37 @@ public final class PlayEbeanHttpQuery {
                 case "eq":
                     final Object eqValue = EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue);
                     if (eqValue instanceof DateTime) {
-                        final DateTime dateTime = (DateTime) eqValue;
-                        predicats.ge(foreignKeys, dateTime);
-                        DateTime upperDateTime = dateTime.plusMillis(999);
-                        if ((upperDateTime.getHourOfDay() == upperDateTime.getMinuteOfHour())
-                                && (upperDateTime.getMinuteOfHour() == upperDateTime.getSecondOfMinute())
-                                && (upperDateTime.getSecondOfMinute() == 0)) {
-                            upperDateTime = upperDateTime
-                                    .plusHours(23)
-                                    .plusMinutes(59)
-                                    .plusSeconds(59);
+                        DateTime lowerDateTime = (DateTime) eqValue;
+                        DateTime upperDateTime = lowerDateTime.plusMillis(999);
+                        switch (rawValue.length()) {
+                            case 16: /* yyyy-MM-dd'T'HH:mm */
+                                lowerDateTime = lowerDateTime
+                                        .minusSeconds(lowerDateTime.getSecondOfMinute());
+                                upperDateTime = upperDateTime
+                                        .plusSeconds(59);
+                                break;
+                            case 13: /* yyyy-MM-dd'T'HH */
+                                lowerDateTime = lowerDateTime
+                                        .minusMinutes(lowerDateTime.getMinuteOfHour())
+                                        .minusSeconds(lowerDateTime.getSecondOfMinute());
+                                upperDateTime = upperDateTime
+                                        .plusMinutes(59)
+                                        .plusSeconds(59);
+                                break;
+                            case 10: /* yyyy-MM-dd */
+                                lowerDateTime = lowerDateTime
+                                        .minusHours(lowerDateTime.getHourOfDay())
+                                        .minusMinutes(lowerDateTime.getMinuteOfHour())
+                                        .minusSeconds(lowerDateTime.getSecondOfMinute());
+                                upperDateTime = upperDateTime
+                                        .plusHours(23)
+                                        .plusMinutes(59)
+                                        .plusSeconds(59);
+                                break;
+                            default:
+                                break;
                         }
+                        predicats.ge(foreignKeys, lowerDateTime);
                         predicats.le(foreignKeys, upperDateTime);
                     } else {
                         predicats.eq(foreignKeys, eqValue);
@@ -199,13 +218,24 @@ public final class PlayEbeanHttpQuery {
                     if (lteValue instanceof DateTime) {
                         final DateTime dateTime = (DateTime) lteValue;
                         DateTime upperDateTime = dateTime.plusMillis(999);
-                        if ((upperDateTime.getHourOfDay() == upperDateTime.getMinuteOfHour())
-                                && (upperDateTime.getMinuteOfHour() == upperDateTime.getSecondOfMinute())
-                                && (upperDateTime.getSecondOfMinute() == 0)) {
-                            upperDateTime = upperDateTime
-                                    .plusHours(23)
-                                    .plusMinutes(59)
-                                    .plusSeconds(59);
+                        switch (rawValue.length()) {
+                            case 16: /* yyyy-MM-dd'T'HH:mm */
+                                upperDateTime = upperDateTime
+                                        .plusSeconds(59);
+                                break;
+                            case 13: /* yyyy-MM-dd'T'HH */
+                                upperDateTime = upperDateTime
+                                        .plusMinutes(59)
+                                        .plusSeconds(59);
+                                break;
+                            case 10: /* yyyy-MM-dd */
+                                upperDateTime = upperDateTime
+                                        .plusHours(23)
+                                        .plusMinutes(59)
+                                        .plusSeconds(59);
+                                break;
+                            default:
+                                break;
                         }
                         predicats.le(foreignKeys, upperDateTime);
                     } else {
@@ -244,11 +274,11 @@ public final class PlayEbeanHttpQuery {
                     break;
                 case "in":
                     final EbeanTypeConverter convertIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
-                    predicats.in(foreignKeys, Arrays.asList(rawValue.split(",")).stream().map((Function<String, Object>) convertIn::convert).toArray());
+                    predicats.in(foreignKeys, Arrays.asList(rawValue.split(",")).stream().map(convertIn::convert).toArray());
                     break;
                 case "notin":
                     final EbeanTypeConverter convertNotIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
-                    predicats.not(Expr.in(foreignKeys, Arrays.asList(rawValue.split(",")).stream().map((Function<String, Object>) convertNotIn::convert).toArray()));
+                    predicats.not(Expr.in(foreignKeys, Arrays.asList(rawValue.split(",")).stream().map(convertNotIn::convert).toArray()));
                     break;
                 case "orderby":
                     if (rawValue != null && (rawValue.compareToIgnoreCase("asc") == 0 || rawValue.compareToIgnoreCase("desc") == 0)) {

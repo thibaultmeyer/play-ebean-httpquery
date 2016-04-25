@@ -27,14 +27,18 @@ package com.zero_x_baadf00d.ebean.converter;
  * Converter for {@code Double}.
  *
  * @author Thibault Meyer
- * @version 16.04.22
+ * @version 16.04.25
  * @since 16.04.22
  */
 public final class DoubleEbeanTypeConverter implements EbeanTypeConverter<Double> {
 
     @Override
     public Double convert(final String obj) {
-        return Double.valueOf(obj.replace(",", "."));
+        try {
+            return Double.valueOf(obj.replace(",", ".").replace(" ", ""));
+        } catch (NumberFormatException ignore) {
+            return null;
+        }
     }
 
     @Override
