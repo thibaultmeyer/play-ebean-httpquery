@@ -25,6 +25,7 @@ package com.zero_x_baadf00d.ebean;
 
 import com.avaje.ebean.*;
 import com.zero_x_baadf00d.ebean.converter.EbeanTypeConverter;
+import org.joda.time.DateTime;
 import play.mvc.Http;
 
 import java.lang.reflect.Field;
@@ -166,7 +167,14 @@ public final class PlayEbeanHttpQuery {
             final String rawValue = queryString.getValue() == null ? "" : queryString.getValue()[0];
             switch (keys.length == 2 ? keys[1] : "eq") {
                 case "eq":
-                    predicats.eq(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
+                    final Object eqValue = EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue);
+                    if (eqValue instanceof DateTime) {
+                        final DateTime dateTime = (DateTime) eqValue;
+                        predicats.ge(foreignKeys, dateTime);
+                        predicats.le(foreignKeys, dateTime.plusMillis(999));
+                    } else {
+                        predicats.eq(foreignKeys, eqValue);
+                    }
                     break;
                 case "gt":
                     predicats.gt(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
@@ -178,7 +186,13 @@ public final class PlayEbeanHttpQuery {
                     predicats.lt(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
                     break;
                 case "lte":
-                    predicats.le(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
+                    final Object lteValue = EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue);
+                    if (lteValue instanceof DateTime) {
+                        final DateTime dateTime = (DateTime) lteValue;
+                        predicats.le(foreignKeys, dateTime.plusMillis(999));
+                    } else {
+                        predicats.le(foreignKeys, lteValue);
+                    }
                     break;
                 case "like":
                     predicats.like(foreignKeys, rawValue);

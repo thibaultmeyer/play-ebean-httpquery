@@ -37,11 +37,13 @@ public final class DateTimeEbeanTypeConverter implements EbeanTypeConverter<Date
 
     @Override
     public DateTime convert(final String obj) {
-        //TODO: use multiple patterns rather than test against 'obj' value
+        final DateTime dateTime;
         if (obj.length() == 10) {
-            return DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC().parseDateTime(obj);
+            dateTime = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC().parseDateTime(obj);
+        } else {
+            dateTime = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss").withZoneUTC().parseDateTime(obj);
         }
-        return DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss").withZoneUTC().parseDateTime(obj);
+        return dateTime.minusMillis(dateTime.getMillisOfSecond());
     }
 
     @Override
