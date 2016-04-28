@@ -43,7 +43,7 @@ import java.util.*;
  * Tests.
  *
  * @author Thibault Meyer
- * @version 16.04.23
+ * @version 16.04.28
  * @since 16.04.22
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -57,12 +57,23 @@ public class Tests {
     private static EbeanServer ebeanServer;
 
     /**
+     * Handle to the Ebean Http Query builder instance.
+     *
+     * @since 16.04.28
+     */
+    private static PlayEbeanHttpQuery playEbeanHttpQuery;
+
+    /**
      * Initialize database.
      *
      * @since 16.04.22
      */
     @BeforeClass
     public static void init() {
+        Tests.playEbeanHttpQuery = new PlayEbeanHttpQuery();
+        Tests.playEbeanHttpQuery.addIgnoredPatterns("fields", "page");
+
+
         if (!AgentLoader.loadAgentFromClasspath("avaje-ebeanorm-agent", "debug=1;packages=models.**")) {
             System.err.println("avaje-ebeanorm-agent not found in classpath - not dynamically loaded");
         }
@@ -113,7 +124,7 @@ public class Tests {
         args.put("albums.year__notin", new String[]{"1999,2000"});
         args.put("albums.name__ilike", new String[]{"desTINY"});
         args.put("albums.name__istartswith", new String[]{"Des"});
-        final Query<Artist> query = PlayEbeanHttpQuery.buildQuery(Artist.class, args, Tests.ebeanServer.createQuery(Artist.class));
+        final Query<Artist> query = Tests.playEbeanHttpQuery.buildQuery(Artist.class, args, Tests.ebeanServer.createQuery(Artist.class));
         final List<Artist> artists = query.findList();
 
         Assert.assertEquals(1, artists.size());
@@ -129,7 +140,7 @@ public class Tests {
         args.put("available__eq", new String[]{"yes"});
         args.put("name__orderby", new String[]{"asc"});
         args.put("artist.name__ilike", new String[]{"STRATovarius"});
-        final Query<Album> query = PlayEbeanHttpQuery.buildQuery(Album.class, args);
+        final Query<Album> query = Tests.playEbeanHttpQuery.buildQuery(Album.class, args);
         final List<Album> albums = query.findList();
 
         Assert.assertEquals(2, albums.size());
@@ -146,7 +157,7 @@ public class Tests {
         args.put("album.artist.name__like", new String[]{"Stratovarius"});
         args.put("album.year__in", new String[]{"1997,1998,1999,2000,2001,2002"});
         args.put("url__orderby", new String[]{"ASC"});
-        final Query<Cover> query = PlayEbeanHttpQuery.buildQuery(Cover.class, args, Tests.ebeanServer.createQuery(Cover.class));
+        final Query<Cover> query = Tests.playEbeanHttpQuery.buildQuery(Cover.class, args, Tests.ebeanServer.createQuery(Cover.class));
         final List<Cover> covers = query.findList();
 
         Assert.assertEquals(3, covers.size());

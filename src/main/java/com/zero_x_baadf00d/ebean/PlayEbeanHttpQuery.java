@@ -30,10 +30,7 @@ import play.mvc.Http;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Helper to map flat query strings to Ebean filters.
@@ -42,14 +39,23 @@ import java.util.Map;
  * @version 16.04.28
  * @since 16.04.22
  */
-public final class PlayEbeanHttpQuery {
+public class PlayEbeanHttpQuery {
 
     /**
      * Keys to ignore.
      *
      * @since 16.04.28
      */
-    private static final List<String> IGNORED_PATTERNS = new ArrayList<>();
+    private final List<String> ignoredPattern;
+
+    /**
+     * Build a default instance.
+     *
+     * @since 16.04.28
+     */
+    public PlayEbeanHttpQuery() {
+        this.ignoredPattern = new ArrayList<>();
+    }
 
     /**
      * Try to resolve the field object the class and the field name.
@@ -59,7 +65,7 @@ public final class PlayEbeanHttpQuery {
      * @return The {@code Field} object
      * @since 16.04.22
      */
-    private static Field resolveField(final Class<?> clazz, final String newObjectName) {
+    private Field resolveField(final Class<?> clazz, final String newObjectName) {
         Class<?> currentClazz = clazz;
         while (currentClazz.getSuperclass() != null && currentClazz.getSuperclass() != Object.class) {
             try {
@@ -78,7 +84,7 @@ public final class PlayEbeanHttpQuery {
      * @return The class
      * @since 16.04.22
      */
-    private static Class<?> resolveClazz(final Field field) {
+    private Class<?> resolveClazz(final Field field) {
         if (field.getType() == List.class) {
             final ParameterizedType aType = (ParameterizedType) field.getGenericType();
             try {
@@ -91,13 +97,23 @@ public final class PlayEbeanHttpQuery {
     }
 
     /**
-     * Add pattern to the ignore list.
+     * Add patterns to the ignore list.
      *
-     * @param pattern The pattern who need to be ignored
+     * @param patterns The patterns who need to be ignored
      * @since 16.04.28
      */
-    public static void addIgnoredPattern(final String pattern) {
-        PlayEbeanHttpQuery.IGNORED_PATTERNS.add(pattern);
+    public void addIgnoredPatterns(final String... patterns) {
+        Collections.addAll(this.ignoredPattern, patterns);
+    }
+
+    /**
+     * Add patterns to the ignore list.
+     *
+     * @param patterns The patterns who need to be ignored
+     * @since 16.04.28
+     */
+    public void addIgnoredPatterns(final List<String> patterns) {
+        this.ignoredPattern.addAll(patterns);
     }
 
     /**
@@ -112,8 +128,8 @@ public final class PlayEbeanHttpQuery {
      * @see Query
      * @since 16.04.22
      */
-    public static <T extends Model> Query<T> buildQuery(final Class<T> c, final Http.Request request) {
-        return PlayEbeanHttpQuery.buildQuery(c, request.queryString(), Ebean.createQuery(c));
+    public <T extends Model> Query<T> buildQuery(final Class<T> c, final Http.Request request) {
+        return this.buildQuery(c, request.queryString(), Ebean.createQuery(c));
     }
 
     /**
@@ -129,8 +145,8 @@ public final class PlayEbeanHttpQuery {
      * @see Query
      * @since 16.04.23
      */
-    public static <T extends Model> Query<T> buildQuery(final Class<T> c, final Http.Request request, final Query<T> query) {
-        return PlayEbeanHttpQuery.buildQuery(c, request.queryString(), query);
+    public <T extends Model> Query<T> buildQuery(final Class<T> c, final Http.Request request, final Query<T> query) {
+        return this.buildQuery(c, request.queryString(), query);
     }
 
     /**
@@ -145,8 +161,8 @@ public final class PlayEbeanHttpQuery {
      * @see Query
      * @since 16.04.22
      */
-    public static <T extends Model> Query<T> buildQuery(final Class<T> c, final Map<String, String[]> args) {
-        return PlayEbeanHttpQuery.buildQuery(c, args, Ebean.createQuery(c));
+    public <T extends Model> Query<T> buildQuery(final Class<T> c, final Map<String, String[]> args) {
+        return this.buildQuery(c, args, Ebean.createQuery(c));
     }
 
     /**
@@ -162,12 +178,12 @@ public final class PlayEbeanHttpQuery {
      * @see Query
      * @since 16.04.22
      */
-    public static <T extends Model> Query<T> buildQuery(final Class<T> c, final Map<String, String[]> args, final Query<T> query) {
+    public <T extends Model> Query<T> buildQuery(final Class<T> c, final Map<String, String[]> args, final Query<T> query) {
         final ExpressionList<T> predicats = query.where();
         final List<String> tableAlias = new ArrayList<>();
 
         for (final Map.Entry<String, String[]> queryString : args.entrySet()) {
-            if (PlayEbeanHttpQuery.IGNORED_PATTERNS.stream().filter(queryString.getKey()::matches).count() > 0) {
+            if (this.ignoredPattern.stream().filter(queryString.getKey()::matches).count() > 0) {
                 continue;
             }
             Class<?> currentClazz = c;
@@ -175,9 +191,9 @@ public final class PlayEbeanHttpQuery {
             String foreignKeys = "";
 
             for (final String word : keys[0].split("\\.")) {
-                final Field field = PlayEbeanHttpQuery.resolveField(currentClazz, word);
+                final Field field = this.resolveField(currentClazz, word);
                 if (field != null) {
-                    currentClazz = PlayEbeanHttpQuery.resolveClazz(field);
+                    currentClazz = this.resolveClazz(field);
                     if (currentClazz == null) {
                         //TODO: Raise exception or (see line below)
                         break; //TODO: just leave the forloop.
