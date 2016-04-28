@@ -49,7 +49,7 @@ public final class PlayEbeanHttpQuery {
      *
      * @since 16.04.28
      */
-    private static final List<String> ignoredPatterns = new ArrayList<>();
+    private static final List<String> IGNORED_PATTERNS = new ArrayList<>();
 
     /**
      * Try to resolve the field object the class and the field name.
@@ -97,7 +97,7 @@ public final class PlayEbeanHttpQuery {
      * @since 16.04.28
      */
     public static void addIgnoredPattern(final String pattern) {
-        PlayEbeanHttpQuery.ignoredPatterns.add(pattern);
+        PlayEbeanHttpQuery.IGNORED_PATTERNS.add(pattern);
     }
 
     /**
@@ -167,7 +167,7 @@ public final class PlayEbeanHttpQuery {
         final List<String> tableAlias = new ArrayList<>();
 
         for (final Map.Entry<String, String[]> queryString : args.entrySet()) {
-            if (PlayEbeanHttpQuery.ignoredPatterns.stream().filter(queryString.getKey()::matches).count() > 0) {
+            if (PlayEbeanHttpQuery.IGNORED_PATTERNS.stream().filter(queryString.getKey()::matches).count() > 0) {
                 continue;
             }
             Class<?> currentClazz = c;
