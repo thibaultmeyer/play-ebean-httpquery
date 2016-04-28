@@ -39,11 +39,26 @@ import java.util.Map;
  * Helper to map flat query strings to Ebean filters.
  *
  * @author Thibault Meyer
- * @version 16.04.25
+ * @version 16.04.28
  * @since 16.04.22
  */
 public final class PlayEbeanHttpQuery {
 
+    /**
+     * Keys to ignore.
+     *
+     * @since 16.04.28
+     */
+    private static final List<String> ignoredPatterns = new ArrayList<>();
+
+    /**
+     * Try to resolve the field object the class and the field name.
+     *
+     * @param clazz         The class to inspect
+     * @param newObjectName The field name to find
+     * @return The {@code Field} object
+     * @since 16.04.22
+     */
     private static Field resolveField(final Class<?> clazz, final String newObjectName) {
         Class<?> currentClazz = clazz;
         while (currentClazz.getSuperclass() != null && currentClazz.getSuperclass() != Object.class) {
@@ -56,6 +71,13 @@ public final class PlayEbeanHttpQuery {
         return null;
     }
 
+    /**
+     * Try to resolve class from {@code Field}.
+     *
+     * @param field The field to use
+     * @return The class
+     * @since 16.04.22
+     */
     private static Class<?> resolveClazz(final Field field) {
         if (field.getType() == List.class) {
             final ParameterizedType aType = (ParameterizedType) field.getGenericType();
@@ -66,6 +88,16 @@ public final class PlayEbeanHttpQuery {
             }
         }
         return field.getType();
+    }
+
+    /**
+     * Add pattern to the ignore list.
+     *
+     * @param pattern The pattern who need to be ignored
+     * @since 16.04.28
+     */
+    public static void addIgnoredPattern(final String pattern) {
+        PlayEbeanHttpQuery.ignoredPatterns.add(pattern);
     }
 
     /**
@@ -135,7 +167,7 @@ public final class PlayEbeanHttpQuery {
         final List<String> tableAlias = new ArrayList<>();
 
         for (final Map.Entry<String, String[]> queryString : args.entrySet()) {
-            if (queryString.getKey().compareTo("fields") == 0) {
+            if (PlayEbeanHttpQuery.ignoredPatterns.stream().filter(queryString.getKey()::matches).count() > 0) {
                 continue;
             }
             Class<?> currentClazz = c;
