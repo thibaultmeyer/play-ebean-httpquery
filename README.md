@@ -51,8 +51,11 @@ Ebean filters generator from HTTP query string arguments.
 ```java
 public class MyController extends Controller {
 
+    @Inject
+    private EbeanHttpQueryModule ebeanHttpQueryModule;
+
     public Result index() {
-        final List<Album> albums = PlayEbeanHttpQuery
+        final List<Album> albums = this.ebeanHttpQueryModule
             .buildQuery(Album.class, request())
             .findList();
         return ok(Json.toJson(albums));
