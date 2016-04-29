@@ -34,7 +34,7 @@ import java.util.Map;
  * ebean type converters.
  *
  * @author Thibault Meyer
- * @version 16.04.22
+ * @version 16.04.29
  * @since 16.04.22
  */
 public final class EbeanTypeConverterManager {
@@ -58,6 +58,7 @@ public final class EbeanTypeConverterManager {
         this.registerConverter(new DoubleEbeanTypeConverter());
         this.registerConverter(new BooleanEbeanTypeConverter());
         this.registerConverter(new DateTimeEbeanTypeConverter());
+        this.registerConverter(new UUIDEbeanTypeConverter());
     }
 
     /**
