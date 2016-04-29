@@ -11,38 +11,23 @@ Ebean filters generator from HTTP query string arguments.
 
 ## Add play-ebean-httpquery to your project
 
-### Gradle
-
-    allprojects {
-        repositories {
-            maven { url "https://jitpack.io" }
-        }
-    }
-
-    dependencies {
-        compile 'com.github.0xbaadf00d:play-ebean-httpquery:release~YY.MM'
-    }
-
-### Maven
-
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-
-    <dependency>
-        <groupId>com.github.0xbaadf00d</groupId>
-        <artifactId>play-ebean-httpquery</artifactId>
-        <version>release~YY.MM</version>
-    </dependency>
-
-### SBT
+#### build.sbt
 
     resolvers += "jitpack" at "https://jitpack.io"
 
     libraryDependencies += "com.github.0xbaadf00d" % "play-ebean-httpquery" % "release~YY.MM"
+
+
+#### application.conf
+
+    # Play Modules
+    # ~~~~~
+    play.modules.enabled += "com.zero_x_baadf00d.play.module.ebean.EbeanHttpQueryBinder"
+
+
+    # Ebean
+    # ~~~~~
+    ebeanQuery.ignorePatterns = ["pattern_1", "pattern_n"]
 
 
 
