@@ -38,7 +38,7 @@ import java.util.List;
  * Implementation of {@code EbeanHttpQueryModule}.
  *
  * @author Thibault Meyer
- * @version 16.04.28
+ * @version 16.04.29
  * @see com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery
  * @since 16.04.28
  */
@@ -48,7 +48,7 @@ public class EbeanHttpQueryImpl implements EbeanHttpQueryModule {
     /**
      * @since 16.03.09
      */
-    private static final String EBEAN_HTTP_PARSER_IGNORE = "ebeanQuery.ignorePatterns";
+    private static final String EBEAN_HTTP_PARSER_IGNORE = "ebeanHttpQuery.ignorePatterns";
 
     /**
      * Handle to the Ebean HTTP Query parser.

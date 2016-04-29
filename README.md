@@ -27,7 +27,7 @@ Ebean filters generator from HTTP query string arguments.
 
     # Ebean
     # ~~~~~
-    ebeanQuery.ignorePatterns = ["pattern_1", "pattern_n"]
+    ebeanHttpQuery.ignorePatterns = ["pattern_1", "pattern_n"]
 
 
 
