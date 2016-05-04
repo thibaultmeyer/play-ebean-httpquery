@@ -36,7 +36,7 @@ import java.util.*;
  * Helper to map flat query strings to Ebean filters.
  *
  * @author Thibault Meyer
- * @version 16.04.28
+ * @version 16.05.05
  * @since 16.04.22
  */
 public class PlayEbeanHttpQuery {
@@ -49,11 +49,30 @@ public class PlayEbeanHttpQuery {
     private final List<String> ignoredPattern;
 
     /**
+     * Handle to the class loader in use.
+     *
+     * @since 16.05.05
+     */
+    private final ClassLoader classLoader;
+
+    /**
      * Build a default instance.
      *
      * @since 16.04.28
      */
     public PlayEbeanHttpQuery() {
+        this.classLoader = this.getClass().getClassLoader();
+        this.ignoredPattern = new ArrayList<>();
+    }
+
+    /**
+     * Build an instance with specific class loader.
+     *
+     * @param classLoader The class loader to use
+     * @since 16.05.05
+     */
+    public PlayEbeanHttpQuery(final ClassLoader classLoader) {
+        this.classLoader = classLoader;
         this.ignoredPattern = new ArrayList<>();
     }
 
@@ -88,8 +107,9 @@ public class PlayEbeanHttpQuery {
         if (field.getType() == List.class) {
             final ParameterizedType aType = (ParameterizedType) field.getGenericType();
             try {
-                return Class.forName(aType.getActualTypeArguments()[0].getTypeName());
+                return this.classLoader.loadClass(aType.getActualTypeArguments()[0].getTypeName());
             } catch (ClassNotFoundException ex) {
+                ex.printStackTrace();
                 return null;
             }
         }
@@ -180,7 +200,6 @@ public class PlayEbeanHttpQuery {
      */
     public <T extends Model> Query<T> buildQuery(final Class<T> c, final Map<String, String[]> args, final Query<T> query) {
         final ExpressionList<T> predicats = query.where();
-        final List<String> tableAlias = new ArrayList<>();
 
         for (final Map.Entry<String, String[]> queryString : args.entrySet()) {
             if (this.ignoredPattern.stream().filter(queryString.getKey()::matches).count() > 0) {
@@ -198,17 +217,7 @@ public class PlayEbeanHttpQuery {
                         //TODO: Raise exception or (see line below)
                         break; //TODO: just leave the forloop.
                     }
-                    if (field.isAnnotationPresent(javax.persistence.ManyToMany.class)) {
-                        //TODO: This statement is still needed? (Ebean 7.7.1)
-                        int idx = tableAlias.indexOf(field.getName());
-                        if (idx < 0) {
-                            tableAlias.add(field.getName());
-                            idx = 0;
-                        }
-                        foreignKeys += (foreignKeys.isEmpty() ? "t" : ".t") + String.valueOf(idx);
-                    } else {
-                        foreignKeys += (foreignKeys.isEmpty() ? "" : ".") + word;
-                    }
+                    foreignKeys += (foreignKeys.isEmpty() ? "" : ".") + word;
                 }
             }
             final String rawValue = queryString.getValue() == null ? "" : queryString.getValue()[0];
