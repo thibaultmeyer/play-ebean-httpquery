@@ -26,8 +26,8 @@ package com.zero_x_baadf00d.play.module.ebean;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.Query;
 import com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery;
-import play.Application;
 import play.Configuration;
+import play.api.Environment;
 import play.mvc.Http;
 
 import javax.inject.Inject;
@@ -62,16 +62,16 @@ public class EbeanHttpQueryImpl implements EbeanHttpQueryModule {
      * Build a basic instance with injected dependency.
      *
      * @param configuration The current application configuration
-     * @param application   The current application instance
+     * @param environment   The current environment
      * @since 16.05.05
      */
     @Inject
-    public EbeanHttpQueryImpl(final Configuration configuration, final Application application) {
+    public EbeanHttpQueryImpl(final Configuration configuration, final Environment environment) {
         final List<String> patterns = configuration.getStringList(
                 EbeanHttpQueryImpl.EBEAN_HTTP_PARSER_IGNORE,
                 new ArrayList<>()
         );
-        this.playEbeanHttpQuery = new PlayEbeanHttpQuery(application.classloader());
+        this.playEbeanHttpQuery = new PlayEbeanHttpQuery(environment.classLoader());
         this.playEbeanHttpQuery.addIgnoredPatterns(patterns);
     }
 
