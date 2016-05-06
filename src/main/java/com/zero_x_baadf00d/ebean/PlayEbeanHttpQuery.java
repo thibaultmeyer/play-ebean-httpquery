@@ -208,20 +208,23 @@ public class PlayEbeanHttpQuery {
             Class<?> currentClazz = c;
             final String[] keys = queryString.getKey().split("__");
             String foreignKeys = "";
-
             for (final String word : keys[0].split("\\.")) {
                 final Field field = this.resolveField(currentClazz, word);
                 if (field != null) {
                     currentClazz = this.resolveClazz(field);
                     if (currentClazz == null) {
                         //TODO: Raise exception or (see line below)
-                        break; //TODO: just leave the forloop.
+                        currentClazz = c;  //TODO: just leave the forloop.
+                        break;
                     }
                     foreignKeys += (foreignKeys.isEmpty() ? "" : ".") + word;
                 }
             }
             final String rawValue = queryString.getValue() == null ? "" : queryString.getValue()[0];
-            switch (keys.length == 2 ? keys[1] : "eq") {
+            if (Model.class.isAssignableFrom(currentClazz) && !foreignKeys.isEmpty()) {
+                foreignKeys += ".id";
+            }
+            switch (keys.length >= 2 ? keys[1] : "eq") {
                 case "eq":
                     final Object eqValue = EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue);
                     if (eqValue instanceof DateTime) {
