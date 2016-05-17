@@ -40,10 +40,17 @@ public class MyController extends Controller {
     private EbeanHttpQueryModule ebeanHttpQueryModule;
 
     public Result index() {
-        final List<Album> albums = this.ebeanHttpQueryModule
-            .buildQuery(Album.class, request())
-            .findList();
-        return ok(Json.toJson(albums));
+        try {
+            final List<Album> albums = this.ebeanHttpQueryModule
+                .buildQuery(Album.class, request())
+                .findList();
+            return ok(Json.toJson(albums));
+        } catch (final PersistenceException ignore) {
+            flash("danger", "Bad query");
+            final List<Album> albums = Album.find
+                .findList();
+            return ok(Json.toJson(albums));
+        }
     }
 }
 ```
