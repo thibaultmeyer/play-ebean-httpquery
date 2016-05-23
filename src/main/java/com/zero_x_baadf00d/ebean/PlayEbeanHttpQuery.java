@@ -224,129 +224,131 @@ public class PlayEbeanHttpQuery {
             if (Model.class.isAssignableFrom(currentClazz) && !foreignKeys.isEmpty()) {
                 foreignKeys += ".id";
             }
-            switch (keys.length >= 2 ? keys[1] : "eq") {
-                case "eq":
-                    final Object eqValue = EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue);
-                    if (eqValue instanceof DateTime) {
-                        DateTime lowerDateTime = (DateTime) eqValue;
-                        DateTime upperDateTime = lowerDateTime.plusMillis(999);
-                        switch (rawValue.length()) {
-                            case 16: /* yyyy-MM-dd'T'HH:mm */
-                                lowerDateTime = lowerDateTime
-                                        .minusSeconds(lowerDateTime.getSecondOfMinute());
-                                upperDateTime = upperDateTime
-                                        .plusSeconds(59);
-                                break;
-                            case 13: /* yyyy-MM-dd'T'HH */
-                                lowerDateTime = lowerDateTime
-                                        .minusMinutes(lowerDateTime.getMinuteOfHour())
-                                        .minusSeconds(lowerDateTime.getSecondOfMinute());
-                                upperDateTime = upperDateTime
-                                        .plusMinutes(59)
-                                        .plusSeconds(59);
-                                break;
-                            case 10: /* yyyy-MM-dd */
-                                lowerDateTime = lowerDateTime
-                                        .minusHours(lowerDateTime.getHourOfDay())
-                                        .minusMinutes(lowerDateTime.getMinuteOfHour())
-                                        .minusSeconds(lowerDateTime.getSecondOfMinute());
-                                upperDateTime = upperDateTime
-                                        .plusHours(23)
-                                        .plusMinutes(59)
-                                        .plusSeconds(59);
-                                break;
-                            default:
-                                break;
+            if (!foreignKeys.isEmpty()) {
+                switch (keys.length >= 2 ? keys[1] : "eq") {
+                    case "eq":
+                        final Object eqValue = EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue);
+                        if (eqValue instanceof DateTime) {
+                            DateTime lowerDateTime = (DateTime) eqValue;
+                            DateTime upperDateTime = lowerDateTime.plusMillis(999);
+                            switch (rawValue.length()) {
+                                case 16: /* yyyy-MM-dd'T'HH:mm */
+                                    lowerDateTime = lowerDateTime
+                                            .minusSeconds(lowerDateTime.getSecondOfMinute());
+                                    upperDateTime = upperDateTime
+                                            .plusSeconds(59);
+                                    break;
+                                case 13: /* yyyy-MM-dd'T'HH */
+                                    lowerDateTime = lowerDateTime
+                                            .minusMinutes(lowerDateTime.getMinuteOfHour())
+                                            .minusSeconds(lowerDateTime.getSecondOfMinute());
+                                    upperDateTime = upperDateTime
+                                            .plusMinutes(59)
+                                            .plusSeconds(59);
+                                    break;
+                                case 10: /* yyyy-MM-dd */
+                                    lowerDateTime = lowerDateTime
+                                            .minusHours(lowerDateTime.getHourOfDay())
+                                            .minusMinutes(lowerDateTime.getMinuteOfHour())
+                                            .minusSeconds(lowerDateTime.getSecondOfMinute());
+                                    upperDateTime = upperDateTime
+                                            .plusHours(23)
+                                            .plusMinutes(59)
+                                            .plusSeconds(59);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            predicats.ge(foreignKeys, lowerDateTime);
+                            predicats.le(foreignKeys, upperDateTime);
+                        } else {
+                            predicats.eq(foreignKeys, eqValue);
                         }
-                        predicats.ge(foreignKeys, lowerDateTime);
-                        predicats.le(foreignKeys, upperDateTime);
-                    } else {
-                        predicats.eq(foreignKeys, eqValue);
-                    }
-                    break;
-                case "gt":
-                    predicats.gt(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
-                    break;
-                case "gte":
-                    predicats.ge(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
-                    break;
-                case "lt":
-                    predicats.lt(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
-                    break;
-                case "lte":
-                    final Object lteValue = EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue);
-                    if (lteValue instanceof DateTime) {
-                        final DateTime dateTime = (DateTime) lteValue;
-                        DateTime upperDateTime = dateTime.plusMillis(999);
-                        switch (rawValue.length()) {
-                            case 16: /* yyyy-MM-dd'T'HH:mm */
-                                upperDateTime = upperDateTime
-                                        .plusSeconds(59);
-                                break;
-                            case 13: /* yyyy-MM-dd'T'HH */
-                                upperDateTime = upperDateTime
-                                        .plusMinutes(59)
-                                        .plusSeconds(59);
-                                break;
-                            case 10: /* yyyy-MM-dd */
-                                upperDateTime = upperDateTime
-                                        .plusHours(23)
-                                        .plusMinutes(59)
-                                        .plusSeconds(59);
-                                break;
-                            default:
-                                break;
+                        break;
+                    case "gt":
+                        predicats.gt(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
+                        break;
+                    case "gte":
+                        predicats.ge(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
+                        break;
+                    case "lt":
+                        predicats.lt(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
+                        break;
+                    case "lte":
+                        final Object lteValue = EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue);
+                        if (lteValue instanceof DateTime) {
+                            final DateTime dateTime = (DateTime) lteValue;
+                            DateTime upperDateTime = dateTime.plusMillis(999);
+                            switch (rawValue.length()) {
+                                case 16: /* yyyy-MM-dd'T'HH:mm */
+                                    upperDateTime = upperDateTime
+                                            .plusSeconds(59);
+                                    break;
+                                case 13: /* yyyy-MM-dd'T'HH */
+                                    upperDateTime = upperDateTime
+                                            .plusMinutes(59)
+                                            .plusSeconds(59);
+                                    break;
+                                case 10: /* yyyy-MM-dd */
+                                    upperDateTime = upperDateTime
+                                            .plusHours(23)
+                                            .plusMinutes(59)
+                                            .plusSeconds(59);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            predicats.le(foreignKeys, upperDateTime);
+                        } else {
+                            predicats.le(foreignKeys, lteValue);
                         }
-                        predicats.le(foreignKeys, upperDateTime);
-                    } else {
-                        predicats.le(foreignKeys, lteValue);
-                    }
-                    break;
-                case "like":
-                    predicats.like(foreignKeys, rawValue);
-                    break;
-                case "ilike":
-                    predicats.ilike(foreignKeys, rawValue);
-                    break;
-                case "contains":
-                    predicats.contains(foreignKeys, rawValue);
-                    break;
-                case "icontains":
-                    predicats.icontains(foreignKeys, rawValue);
-                    break;
-                case "isnull":
-                    predicats.isNull(foreignKeys);
-                    break;
-                case "isnotnull":
-                    predicats.isNotNull(foreignKeys);
-                    break;
-                case "startswith":
-                    predicats.startsWith(foreignKeys, rawValue);
-                    break;
-                case "endswith":
-                    predicats.endsWith(foreignKeys, rawValue);
-                    break;
-                case "istartswith":
-                    predicats.istartsWith(foreignKeys, rawValue);
-                    break;
-                case "iendswith":
-                    predicats.iendsWith(foreignKeys, rawValue);
-                    break;
-                case "in":
-                    final EbeanTypeConverter convertIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
-                    predicats.in(foreignKeys, Arrays.asList(rawValue.split(",")).stream().map(convertIn::convert).toArray());
-                    break;
-                case "notin":
-                    final EbeanTypeConverter convertNotIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
-                    predicats.not(Expr.in(foreignKeys, Arrays.asList(rawValue.split(",")).stream().map(convertNotIn::convert).toArray()));
-                    break;
-                case "orderby":
-                    if (rawValue != null && (rawValue.compareToIgnoreCase("asc") == 0 || rawValue.compareToIgnoreCase("desc") == 0)) {
-                        predicats.orderBy(foreignKeys + " " + rawValue);
-                    }
-                    break;
-                default:
-                    break;
+                        break;
+                    case "like":
+                        predicats.like(foreignKeys, rawValue);
+                        break;
+                    case "ilike":
+                        predicats.ilike(foreignKeys, rawValue);
+                        break;
+                    case "contains":
+                        predicats.contains(foreignKeys, rawValue);
+                        break;
+                    case "icontains":
+                        predicats.icontains(foreignKeys, rawValue);
+                        break;
+                    case "isnull":
+                        predicats.isNull(foreignKeys);
+                        break;
+                    case "isnotnull":
+                        predicats.isNotNull(foreignKeys);
+                        break;
+                    case "startswith":
+                        predicats.startsWith(foreignKeys, rawValue);
+                        break;
+                    case "endswith":
+                        predicats.endsWith(foreignKeys, rawValue);
+                        break;
+                    case "istartswith":
+                        predicats.istartsWith(foreignKeys, rawValue);
+                        break;
+                    case "iendswith":
+                        predicats.iendsWith(foreignKeys, rawValue);
+                        break;
+                    case "in":
+                        final EbeanTypeConverter convertIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
+                        predicats.in(foreignKeys, Arrays.asList(rawValue.split(",")).stream().map(convertIn::convert).toArray());
+                        break;
+                    case "notin":
+                        final EbeanTypeConverter convertNotIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
+                        predicats.not(Expr.in(foreignKeys, Arrays.asList(rawValue.split(",")).stream().map(convertNotIn::convert).toArray()));
+                        break;
+                    case "orderby":
+                        if (rawValue != null && (rawValue.compareToIgnoreCase("asc") == 0 || rawValue.compareToIgnoreCase("desc") == 0)) {
+                            predicats.orderBy(foreignKeys + " " + rawValue);
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         }
         return query;
