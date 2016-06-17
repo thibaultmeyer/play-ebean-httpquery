@@ -33,6 +33,9 @@ Ebean filters generator from HTTP query string arguments.
 
 ## Usage
 
+
+#### Build query
+
 ```java
 public class MyController extends Controller {
 
@@ -54,6 +57,30 @@ public class MyController extends Controller {
     }
 }
 ```
+
+#### Register new converter
+
+``` java
+public class AccountStatusConverter implements EbeanTypeConverter<AccountStatus> {
+
+    @Override
+    public Object convert(final String obj) {
+        return AccountStatus.valueOf(obj);
+    }
+
+    @Override
+    public Class<AccountStatus> getManagedObjectClass() {
+        return AccountStatus.class;
+    }
+}
+```
+
+``` java
+EbeanTypeConverterManager
+    .getInstance()
+    .registerConverter(new AccountStatusConverter());
+```
+
 
 
 ## License
