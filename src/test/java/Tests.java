@@ -43,7 +43,7 @@ import java.util.*;
  * Tests.
  *
  * @author Thibault Meyer
- * @version 16.04.28
+ * @version 16.09.06
  * @since 16.04.22
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -64,6 +64,13 @@ public class Tests {
     private static PlayEbeanHttpQuery playEbeanHttpQuery;
 
     /**
+     * Handle to the Ebean Http Query builder instance.
+     *
+     * @since 16.09.06
+     */
+    private static PlayEbeanHttpQuery playEbeanHttpQueryClone;
+
+    /**
      * Initialize database.
      *
      * @since 16.04.22
@@ -72,6 +79,7 @@ public class Tests {
     public static void init() {
         Tests.playEbeanHttpQuery = new PlayEbeanHttpQuery();
         Tests.playEbeanHttpQuery.addIgnoredPatterns("fields", "page");
+        Tests.playEbeanHttpQueryClone = (PlayEbeanHttpQuery) Tests.playEbeanHttpQuery.clone();
 
 
         if (!AgentLoader.loadAgentFromClasspath("avaje-ebeanorm-agent", "debug=1;packages=models.**")) {
@@ -158,6 +166,24 @@ public class Tests {
         args.put("album.year__in", new String[]{"1997,1998,1999,2000,2001,2002"});
         args.put("url__orderby", new String[]{"ASC"});
         final Query<Cover> query = Tests.playEbeanHttpQuery.buildQuery(Cover.class, args, Tests.ebeanServer.createQuery(Cover.class));
+        final List<Cover> covers = query.findList();
+
+        Assert.assertEquals(3, covers.size());
+        Assert.assertEquals("https://domain.local/cover/123897948989", covers.get(0).getUrl());
+        Assert.assertEquals("https://domain.local/cover/298372983720", covers.get(1).getUrl());
+        Assert.assertEquals("https://domain.local/cover/898656564654", covers.get(2).getUrl());
+    }
+
+    /**
+     * @since 16.09.06
+     */
+    @Test
+    public void test004() {
+        final Map<String, String[]> args = new HashMap<>();
+        args.put("album.artist.name__like", new String[]{"Stratovarius"});
+        args.put("album.year__in", new String[]{"1997,1998,1999,2000,2001,2002"});
+        args.put("url__orderby", new String[]{"ASC"});
+        final Query<Cover> query = Tests.playEbeanHttpQueryClone.buildQuery(Cover.class, args, Tests.ebeanServer.createQuery(Cover.class));
         final List<Cover> covers = query.findList();
 
         Assert.assertEquals(3, covers.size());

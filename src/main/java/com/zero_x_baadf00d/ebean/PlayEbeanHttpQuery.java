@@ -36,10 +36,10 @@ import java.util.*;
  * Helper to map flat query strings to Ebean filters.
  *
  * @author Thibault Meyer
- * @version 16.05.05
+ * @version 16.09.06
  * @since 16.04.22
  */
-public class PlayEbeanHttpQuery {
+public class PlayEbeanHttpQuery implements Cloneable {
 
     /**
      * Keys to ignore.
@@ -234,27 +234,27 @@ public class PlayEbeanHttpQuery {
                             switch (rawValue.length()) {
                                 case 16: /* yyyy-MM-dd'T'HH:mm */
                                     lowerDateTime = lowerDateTime
-                                            .minusSeconds(lowerDateTime.getSecondOfMinute());
+                                        .minusSeconds(lowerDateTime.getSecondOfMinute());
                                     upperDateTime = upperDateTime
-                                            .plusSeconds(59);
+                                        .plusSeconds(59);
                                     break;
                                 case 13: /* yyyy-MM-dd'T'HH */
                                     lowerDateTime = lowerDateTime
-                                            .minusMinutes(lowerDateTime.getMinuteOfHour())
-                                            .minusSeconds(lowerDateTime.getSecondOfMinute());
+                                        .minusMinutes(lowerDateTime.getMinuteOfHour())
+                                        .minusSeconds(lowerDateTime.getSecondOfMinute());
                                     upperDateTime = upperDateTime
-                                            .plusMinutes(59)
-                                            .plusSeconds(59);
+                                        .plusMinutes(59)
+                                        .plusSeconds(59);
                                     break;
                                 case 10: /* yyyy-MM-dd */
                                     lowerDateTime = lowerDateTime
-                                            .minusHours(lowerDateTime.getHourOfDay())
-                                            .minusMinutes(lowerDateTime.getMinuteOfHour())
-                                            .minusSeconds(lowerDateTime.getSecondOfMinute());
+                                        .minusHours(lowerDateTime.getHourOfDay())
+                                        .minusMinutes(lowerDateTime.getMinuteOfHour())
+                                        .minusSeconds(lowerDateTime.getSecondOfMinute());
                                     upperDateTime = upperDateTime
-                                            .plusHours(23)
-                                            .plusMinutes(59)
-                                            .plusSeconds(59);
+                                        .plusHours(23)
+                                        .plusMinutes(59)
+                                        .plusSeconds(59);
                                     break;
                                 default:
                                     break;
@@ -282,18 +282,18 @@ public class PlayEbeanHttpQuery {
                             switch (rawValue.length()) {
                                 case 16: /* yyyy-MM-dd'T'HH:mm */
                                     upperDateTime = upperDateTime
-                                            .plusSeconds(59);
+                                        .plusSeconds(59);
                                     break;
                                 case 13: /* yyyy-MM-dd'T'HH */
                                     upperDateTime = upperDateTime
-                                            .plusMinutes(59)
-                                            .plusSeconds(59);
+                                        .plusMinutes(59)
+                                        .plusSeconds(59);
                                     break;
                                 case 10: /* yyyy-MM-dd */
                                     upperDateTime = upperDateTime
-                                            .plusHours(23)
-                                            .plusMinutes(59)
-                                            .plusSeconds(59);
+                                        .plusHours(23)
+                                        .plusMinutes(59)
+                                        .plusSeconds(59);
                                     break;
                                 default:
                                     break;
@@ -352,5 +352,19 @@ public class PlayEbeanHttpQuery {
             }
         }
         return query;
+    }
+
+    /**
+     * Clone object.
+     *
+     * @return A new instance
+     * @since 16.09.06
+     */
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException ignore) {
+        }
+        return null;
     }
 }

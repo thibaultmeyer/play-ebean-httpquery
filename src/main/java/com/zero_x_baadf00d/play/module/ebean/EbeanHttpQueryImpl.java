@@ -39,7 +39,7 @@ import java.util.List;
  * Implementation of {@code EbeanHttpQueryModule}.
  *
  * @author Thibault Meyer
- * @version 16.05.05
+ * @version 16.09.06
  * @see com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery
  * @since 16.04.28
  */
@@ -68,8 +68,8 @@ public class EbeanHttpQueryImpl implements EbeanHttpQueryModule {
     @Inject
     public EbeanHttpQueryImpl(final Configuration configuration, final Environment environment) {
         final List<String> patterns = configuration.getStringList(
-                EbeanHttpQueryImpl.EBEAN_HTTP_PARSER_IGNORE,
-                new ArrayList<>()
+            EbeanHttpQueryImpl.EBEAN_HTTP_PARSER_IGNORE,
+            new ArrayList<>()
         );
         this.playEbeanHttpQuery = new PlayEbeanHttpQuery(environment.classLoader());
         this.playEbeanHttpQuery.addIgnoredPatterns(patterns);
@@ -83,5 +83,10 @@ public class EbeanHttpQueryImpl implements EbeanHttpQueryModule {
     @Override
     public <T extends Model> Query<T> buildQuery(final Class<T> c, final Http.Request request, final Query<T> query) {
         return this.playEbeanHttpQuery.buildQuery(c, request, query);
+    }
+
+    @Override
+    public PlayEbeanHttpQuery withNewEbeanHttpQuery() {
+        return (PlayEbeanHttpQuery) this.playEbeanHttpQuery.clone();
     }
 }

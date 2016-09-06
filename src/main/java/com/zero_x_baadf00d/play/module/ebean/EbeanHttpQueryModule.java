@@ -25,6 +25,7 @@ package com.zero_x_baadf00d.play.module.ebean;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.Query;
+import com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery;
 import play.mvc.Http;
 
 /**
@@ -32,7 +33,7 @@ import play.mvc.Http;
  * {@code PlayEbeanHttpQuery}.
  *
  * @author Thibault Meyer
- * @version 16.04.28
+ * @version 16.09.06
  * @see com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery
  * @since 16.04.28
  */
@@ -66,4 +67,13 @@ public interface EbeanHttpQueryModule {
      * @since 16.04.28
      */
     <T extends Model> Query<T> buildQuery(final Class<T> c, final Http.Request request, final Query<T> query);
+
+    /**
+     * Return a new instance of {@code PlayEbeanHttpQuery}.
+     *
+     * @return A new instance of {@code PlayEbeanHttpQuery}
+     * @see PlayEbeanHttpQuery
+     * @since 16.09.06
+     */
+    PlayEbeanHttpQuery withNewEbeanHttpQuery();
 }

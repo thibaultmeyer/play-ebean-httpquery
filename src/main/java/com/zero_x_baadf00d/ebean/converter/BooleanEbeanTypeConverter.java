@@ -37,9 +37,9 @@ public final class BooleanEbeanTypeConverter implements EbeanTypeConverter<Boole
     @Override
     public Boolean convert(final String obj) {
         return Boolean.valueOf(obj
-                .toLowerCase(Locale.ENGLISH)
-                .replaceAll("(yes|1)", "true")
-                .replaceAll("(no|0)", "false")
+            .toLowerCase(Locale.ENGLISH)
+            .replaceAll("(yes|1)", "true")
+            .replaceAll("(no|0)", "false")
         );
     }
 

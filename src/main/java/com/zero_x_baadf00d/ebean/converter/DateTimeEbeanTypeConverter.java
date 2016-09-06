@@ -52,10 +52,10 @@ public final class DateTimeEbeanTypeConverter implements EbeanTypeConverter<Date
      */
     public DateTimeEbeanTypeConverter() {
         final DateTimeParser[] formatPatterns = {
-                DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss").getParser(),
-                DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm").getParser(),
-                DateTimeFormat.forPattern("yyyy-MM-dd'T'HH").getParser(),
-                DateTimeFormat.forPattern("yyyy-MM-dd").getParser(),
+            DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss").getParser(),
+            DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm").getParser(),
+            DateTimeFormat.forPattern("yyyy-MM-dd'T'HH").getParser(),
+            DateTimeFormat.forPattern("yyyy-MM-dd").getParser(),
         };
         this.dateTimeFormatter = new DateTimeFormatterBuilder().append(null, formatPatterns).toFormatter().withZoneUTC();
     }
