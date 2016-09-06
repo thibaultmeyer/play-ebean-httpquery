@@ -335,11 +335,11 @@ public class PlayEbeanHttpQuery implements Cloneable {
                         break;
                     case "in":
                         final EbeanTypeConverter convertIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
-                        predicats.in(foreignKeys, Arrays.asList(rawValue.split(",")).stream().map(convertIn::convert).toArray());
+                        predicats.in(foreignKeys, Arrays.stream(rawValue.split(",")).map(convertIn::convert).toArray());
                         break;
                     case "notin":
                         final EbeanTypeConverter convertNotIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
-                        predicats.not(Expr.in(foreignKeys, Arrays.asList(rawValue.split(",")).stream().map(convertNotIn::convert).toArray()));
+                        predicats.not(Expr.in(foreignKeys, Arrays.stream(rawValue.split(",")).map(convertNotIn::convert).toArray()));
                         break;
                     case "orderby":
                         if (rawValue != null && (rawValue.compareToIgnoreCase("asc") == 0 || rawValue.compareToIgnoreCase("desc") == 0)) {
