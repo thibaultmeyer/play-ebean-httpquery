@@ -36,7 +36,7 @@ import java.util.*;
  * Helper to map flat query strings to Ebean filters.
  *
  * @author Thibault Meyer
- * @version 16.09.06
+ * @version 16.09.30
  * @since 16.04.22
  */
 public class PlayEbeanHttpQuery implements Cloneable {
@@ -47,6 +47,13 @@ public class PlayEbeanHttpQuery implements Cloneable {
      * @since 16.04.28
      */
     private final List<String> ignoredPattern;
+
+    /**
+     * Keys aliasing.
+     *
+     * @since 16.09.30
+     */
+    private final Map<String, String> aliasPattern;
 
     /**
      * Handle to the class loader in use.
@@ -63,6 +70,7 @@ public class PlayEbeanHttpQuery implements Cloneable {
     public PlayEbeanHttpQuery() {
         this.classLoader = this.getClass().getClassLoader();
         this.ignoredPattern = new ArrayList<>();
+        this.aliasPattern = new HashMap<>();
     }
 
     /**
@@ -74,6 +82,7 @@ public class PlayEbeanHttpQuery implements Cloneable {
     public PlayEbeanHttpQuery(final ClassLoader classLoader) {
         this.classLoader = classLoader;
         this.ignoredPattern = new ArrayList<>();
+        this.aliasPattern = new HashMap<>();
     }
 
     /**
@@ -134,6 +143,18 @@ public class PlayEbeanHttpQuery implements Cloneable {
      */
     public void addIgnoredPatterns(final List<String> patterns) {
         this.ignoredPattern.addAll(patterns);
+    }
+
+    /**
+     * Add new alias. <pre>addAlias("article.album.displayName", "firstName")</pre> will
+     * create a something like: <pre>article.album.firstName</pre>
+     *
+     * @param pattern The pattern to match
+     * @param alias   The alias to use
+     * @since 16.09.30
+     */
+    public void addAlias(final String pattern, final String alias) {
+        this.aliasPattern.put(pattern, alias);
     }
 
     /**
@@ -208,7 +229,20 @@ public class PlayEbeanHttpQuery implements Cloneable {
             Class<?> currentClazz = c;
             final String[] keys = queryString.getKey().split("__");
             String foreignKeys = "";
-            for (final String word : keys[0].split("\\.")) {
+            for (String word : keys[0].split("\\.")) {
+                if (!this.aliasPattern.isEmpty()) {
+                    final String foreignKeyToTry = (foreignKeys.isEmpty() ? "" : foreignKeys + ".") + word;
+                    String alias = null;
+                    for (final Map.Entry<String, String> entry : this.aliasPattern.entrySet()) {
+                        if (foreignKeyToTry.matches(entry.getKey())) {
+                            alias = entry.getValue();
+                            break;
+                        }
+                    }
+                    if (alias != null) {
+                        word = alias;
+                    }
+                }
                 final Field field = this.resolveField(currentClazz, word);
                 if (field != null) {
                     currentClazz = this.resolveClazz(field);

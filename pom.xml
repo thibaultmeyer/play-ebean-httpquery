@@ -6,7 +6,7 @@
 
     <groupId>com.zero_x_baadf00d</groupId>
     <artifactId>play-ebean-httpquery</artifactId>
-    <version>16.09</version>
+    <version>16.10</version>
     <name>Play Ebean HTTP Query</name>
     <description>Simple key manager for Ebean encryption</description>
 
