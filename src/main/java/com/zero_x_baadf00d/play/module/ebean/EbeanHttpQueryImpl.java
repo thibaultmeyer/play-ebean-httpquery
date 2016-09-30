@@ -34,12 +34,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of {@code EbeanHttpQueryModule}.
  *
  * @author Thibault Meyer
- * @version 16.09.06
+ * @version 16.09.30
  * @see com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery
  * @since 16.04.28
  */
@@ -50,6 +51,11 @@ public class EbeanHttpQueryImpl implements EbeanHttpQueryModule {
      * @since 16.03.09
      */
     private static final String EBEAN_HTTP_PARSER_IGNORE = "ebeanHttpQuery.ignorePatterns";
+
+    /**
+     * @since 16.03.30
+     */
+    private static final String EBEAN_HTTP_FIELD_ALIASES = "ebeanHttpQuery.fieldAliases";
 
     /**
      * Handle to the Ebean HTTP Query parser.
@@ -73,6 +79,8 @@ public class EbeanHttpQueryImpl implements EbeanHttpQueryModule {
         );
         this.playEbeanHttpQuery = new PlayEbeanHttpQuery(environment.classLoader());
         this.playEbeanHttpQuery.addIgnoredPatterns(patterns);
+        final Map<?, ?> map = (Map<?, ?>) configuration.getObject(EbeanHttpQueryImpl.EBEAN_HTTP_FIELD_ALIASES, new ArrayList<>());
+        map.forEach((key, value) -> playEbeanHttpQuery.addAlias((String) key, (String) value));
     }
 
     @Override
