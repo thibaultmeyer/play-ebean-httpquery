@@ -1,7 +1,7 @@
 # Play Ebean HTTP Query
 
 
-[![Latest release](https://img.shields.io/badge/latest_release-16.09-orange.svg)](https://github.com/0xbaadf00d/play-ebean-httpquery/releases)
+[![Latest release](https://img.shields.io/badge/latest_release-16.10-orange.svg)](https://github.com/0xbaadf00d/play-ebean-httpquery/releases)
 [![JitPack](https://jitpack.io/v/0xbaadf00d/play-ebean-httpquery.svg)](https://jitpack.io/#0xbaadf00d/play-ebean-httpquery)
 [![Build](https://img.shields.io/travis-ci/0xbaadf00d/play-ebean-httpquery.svg?branch=master&style=flat)](https://travis-ci.org/0xbaadf00d/play-ebean-httpquery)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/0xbaadf00d/play-ebean-httpquery/master/LICENSE)
@@ -25,9 +25,17 @@ Ebean filters generator from HTTP query string arguments.
     play.modules.enabled += "com.zero_x_baadf00d.play.module.ebean.EbeanHttpQueryBinder"
 
 
-    # Ebean
+    # Ebean Http Query
     # ~~~~~
-    ebeanHttpQuery.ignorePatterns = ["pattern_1", "pattern_n"]
+    # https://github.com/0xbaadf00d/play-ebean-httpquery
+    ebeanHttpQuery {
+        ignorePatterns = ["pattern_1", "pattern_n"]
+    
+        fieldAliases {
+            "pattern_to_find" = "replace_last_word_with"
+            ".*\\.?businessActorRef" = "businessActor"
+        }
+    }
 
 
 
