@@ -33,6 +33,7 @@ import play.mvc.Http;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -79,7 +80,7 @@ public class EbeanHttpQueryImpl implements EbeanHttpQueryModule {
         );
         this.playEbeanHttpQuery = new PlayEbeanHttpQuery(environment.classLoader());
         this.playEbeanHttpQuery.addIgnoredPatterns(patterns);
-        final Map<?, ?> map = (Map<?, ?>) configuration.getObject(EbeanHttpQueryImpl.EBEAN_HTTP_FIELD_ALIASES, new ArrayList<>());
+        final Map<?, ?> map = (Map<?, ?>) configuration.getObject(EbeanHttpQueryImpl.EBEAN_HTTP_FIELD_ALIASES, new HashMap<>());
         map.forEach((key, value) -> playEbeanHttpQuery.addAlias((String) key, (String) value));
     }
 

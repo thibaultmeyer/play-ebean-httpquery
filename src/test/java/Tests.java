@@ -194,4 +194,23 @@ public class Tests {
         Assert.assertEquals("https://domain.local/cover/298372983720", covers.get(1).getUrl());
         Assert.assertEquals("https://domain.local/cover/898656564654", covers.get(2).getUrl());
     }
+
+    /**
+     * @since 16.09.30
+     */
+    @Test
+    public void test005() {
+        final Map<String, String[]> args = new LinkedHashMap<>();
+        args.put("album.year__orderby", new String[]{"ASC"});
+        args.put("album.artist.name__orderby", new String[]{"ASC"});
+        final Query<Album> query = Tests.playEbeanHttpQueryClone.buildQuery(Album.class, args, Tests.ebeanServer.createQuery(Album.class));
+        final List<Album> albums = query.findList();
+
+        Assert.assertEquals(6, albums.size());
+        Assert.assertEquals(Integer.valueOf(1997), albums.get(0).getYear());
+        Assert.assertEquals(Integer.valueOf(2001), albums.get(2).getYear());
+        Assert.assertEquals(Integer.valueOf(2001), albums.get(3).getYear());
+        Assert.assertEquals("Sonata Arctica", albums.get(2).getArtist().getName());
+        Assert.assertEquals("Stratovarius", albums.get(3).getArtist().getName());
+    }
 }

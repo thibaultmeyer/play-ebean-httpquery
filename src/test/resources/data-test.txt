@@ -22,3 +22,8 @@ Stratovarius
 https://domain.local/cover/123897948989
 Infinite
 2001 45 true
+
+Sonata Arctica
+https://domain.local/cover/654897432189
+Silence
+2001 60 true

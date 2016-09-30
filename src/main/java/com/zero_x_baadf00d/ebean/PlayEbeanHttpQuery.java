@@ -31,6 +31,7 @@ import play.mvc.Http;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Helper to map flat query strings to Ebean filters.
@@ -221,6 +222,7 @@ public class PlayEbeanHttpQuery implements Cloneable {
      */
     public <T extends Model> Query<T> buildQuery(final Class<T> c, final Map<String, String[]> args, final Query<T> query) {
         final ExpressionList<T> predicats = query.where();
+        final List<String> orderByPredicats = new ArrayList<>();
 
         for (final Map.Entry<String, String[]> queryString : args.entrySet()) {
             if (this.ignoredPattern.stream().filter(queryString.getKey()::matches).count() > 0) {
@@ -377,13 +379,16 @@ public class PlayEbeanHttpQuery implements Cloneable {
                         break;
                     case "orderby":
                         if (rawValue != null && (rawValue.compareToIgnoreCase("asc") == 0 || rawValue.compareToIgnoreCase("desc") == 0)) {
-                            predicats.orderBy(foreignKeys + " " + rawValue);
+                            orderByPredicats.add(foreignKeys + " " + rawValue);
                         }
                         break;
                     default:
                         break;
                 }
             }
+        }
+        if (!orderByPredicats.isEmpty()) {
+            predicats.orderBy(orderByPredicats.stream().collect(Collectors.joining(", ")));
         }
         return query;
     }
