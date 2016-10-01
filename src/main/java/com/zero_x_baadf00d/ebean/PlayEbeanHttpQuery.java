@@ -221,8 +221,8 @@ public class PlayEbeanHttpQuery implements Cloneable {
      * @since 16.04.22
      */
     public <T extends Model> Query<T> buildQuery(final Class<T> c, final Map<String, String[]> args, final Query<T> query) {
-        final ExpressionList<T> predicats = query.where();
-        final List<String> orderByPredicats = new ArrayList<>();
+        final ExpressionList<T> predicates = query.where();
+        final List<String> orderByPredicates = new ArrayList<>();
 
         for (final Map.Entry<String, String[]> queryString : args.entrySet()) {
             if (this.ignoredPattern.stream().filter(queryString.getKey()::matches).count() > 0) {
@@ -295,20 +295,20 @@ public class PlayEbeanHttpQuery implements Cloneable {
                                 default:
                                     break;
                             }
-                            predicats.ge(foreignKeys, lowerDateTime);
-                            predicats.le(foreignKeys, upperDateTime);
+                            predicates.ge(foreignKeys, lowerDateTime);
+                            predicates.le(foreignKeys, upperDateTime);
                         } else {
-                            predicats.eq(foreignKeys, eqValue);
+                            predicates.eq(foreignKeys, eqValue);
                         }
                         break;
                     case "gt":
-                        predicats.gt(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
+                        predicates.gt(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
                         break;
                     case "gte":
-                        predicats.ge(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
+                        predicates.ge(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
                         break;
                     case "lt":
-                        predicats.lt(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
+                        predicates.lt(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
                         break;
                     case "lte":
                         final Object lteValue = EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue);
@@ -334,52 +334,52 @@ public class PlayEbeanHttpQuery implements Cloneable {
                                 default:
                                     break;
                             }
-                            predicats.le(foreignKeys, upperDateTime);
+                            predicates.le(foreignKeys, upperDateTime);
                         } else {
-                            predicats.le(foreignKeys, lteValue);
+                            predicates.le(foreignKeys, lteValue);
                         }
                         break;
                     case "like":
-                        predicats.like(foreignKeys, rawValue);
+                        predicates.like(foreignKeys, rawValue);
                         break;
                     case "ilike":
-                        predicats.ilike(foreignKeys, rawValue);
+                        predicates.ilike(foreignKeys, rawValue);
                         break;
                     case "contains":
-                        predicats.contains(foreignKeys, rawValue);
+                        predicates.contains(foreignKeys, rawValue);
                         break;
                     case "icontains":
-                        predicats.icontains(foreignKeys, rawValue);
+                        predicates.icontains(foreignKeys, rawValue);
                         break;
                     case "isnull":
-                        predicats.isNull(foreignKeys);
+                        predicates.isNull(foreignKeys);
                         break;
                     case "isnotnull":
-                        predicats.isNotNull(foreignKeys);
+                        predicates.isNotNull(foreignKeys);
                         break;
                     case "startswith":
-                        predicats.startsWith(foreignKeys, rawValue);
+                        predicates.startsWith(foreignKeys, rawValue);
                         break;
                     case "endswith":
-                        predicats.endsWith(foreignKeys, rawValue);
+                        predicates.endsWith(foreignKeys, rawValue);
                         break;
                     case "istartswith":
-                        predicats.istartsWith(foreignKeys, rawValue);
+                        predicates.istartsWith(foreignKeys, rawValue);
                         break;
                     case "iendswith":
-                        predicats.iendsWith(foreignKeys, rawValue);
+                        predicates.iendsWith(foreignKeys, rawValue);
                         break;
                     case "in":
                         final EbeanTypeConverter convertIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
-                        predicats.in(foreignKeys, Arrays.stream(rawValue.split(",")).map(convertIn::convert).toArray());
+                        predicates.in(foreignKeys, Arrays.stream(rawValue.split(",")).map(convertIn::convert).toArray());
                         break;
                     case "notin":
                         final EbeanTypeConverter convertNotIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
-                        predicats.not(Expr.in(foreignKeys, Arrays.stream(rawValue.split(",")).map(convertNotIn::convert).toArray()));
+                        predicates.not(Expr.in(foreignKeys, Arrays.stream(rawValue.split(",")).map(convertNotIn::convert).toArray()));
                         break;
                     case "orderby":
                         if (rawValue != null && (rawValue.compareToIgnoreCase("asc") == 0 || rawValue.compareToIgnoreCase("desc") == 0)) {
-                            orderByPredicats.add(foreignKeys + " " + rawValue);
+                            orderByPredicates.add(foreignKeys + " " + rawValue);
                         }
                         break;
                     default:
@@ -387,8 +387,8 @@ public class PlayEbeanHttpQuery implements Cloneable {
                 }
             }
         }
-        if (!orderByPredicats.isEmpty()) {
-            predicats.orderBy(orderByPredicats.stream().collect(Collectors.joining(", ")));
+        if (!orderByPredicates.isEmpty()) {
+            predicates.orderBy(orderByPredicates.stream().collect(Collectors.joining(", ")));
         }
         return query;
     }
