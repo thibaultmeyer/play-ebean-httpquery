@@ -43,7 +43,7 @@ import java.util.*;
  * Tests.
  *
  * @author Thibault Meyer
- * @version 16.09.06
+ * @version 16.09.19
  * @since 16.04.22
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -81,7 +81,7 @@ public class Tests {
         Tests.playEbeanHttpQuery.addIgnoredPatterns("fields", "page");
         Tests.playEbeanHttpQuery.addAlias(".*\\.?nothing", "name");
         Tests.playEbeanHttpQuery.addAlias(".*\\.?author", "artist");
-        Tests.playEbeanHttpQuery.addAlias("boap", "album");
+        Tests.playEbeanHttpQuery.addAlias("Cover>boap", "album");
         Tests.playEbeanHttpQueryClone = (PlayEbeanHttpQuery) Tests.playEbeanHttpQuery.clone();
 
 
