@@ -23,7 +23,7 @@
  */
 package com.zero_x_baadf00d.ebean;
 
-import com.avaje.ebean.*;
+import io.ebean.*;
 import com.zero_x_baadf00d.ebean.converter.EbeanTypeConverter;
 import org.joda.time.DateTime;
 import play.mvc.Http;

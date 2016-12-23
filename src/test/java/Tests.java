@@ -22,15 +22,16 @@
  * SOFTWARE.
  */
 
-import com.avaje.ebean.EbeanServer;
-import com.avaje.ebean.EbeanServerFactory;
-import com.avaje.ebean.Query;
-import com.avaje.ebean.config.ServerConfig;
 import com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery;
+import io.ebean.EbeanServer;
+import io.ebean.EbeanServerFactory;
+import io.ebean.Query;
+import io.ebean.config.ServerConfig;
+import io.ebean.enhance.agent.Transformer;
+import io.ebean.enhance.ant.OfflineFileTransform;
 import models.Album;
 import models.Artist;
 import models.Cover;
-import org.avaje.agentloader.AgentLoader;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -84,10 +85,14 @@ public class Tests {
         Tests.playEbeanHttpQuery.addAlias("Cover>boap", "album");
         Tests.playEbeanHttpQueryClone = (PlayEbeanHttpQuery) Tests.playEbeanHttpQuery.clone();
 
+        final Transformer transformer = new Transformer("models.*", "debug=1");
+        final OfflineFileTransform offlineFileTransform = new OfflineFileTransform(
+            transformer,
+            ClassLoader.getSystemClassLoader(),
+            "target"
+        );
+        offlineFileTransform.process("**");
 
-        if (!AgentLoader.loadAgentFromClasspath("avaje-ebeanorm-agent", "debug=1;packages=models.**")) {
-            System.err.println("avaje-ebeanorm-agent not found in classpath - not dynamically loaded");
-        }
         final ServerConfig serverConfig = new ServerConfig();
         serverConfig.setName("default");
         serverConfig.loadFromProperties();
@@ -99,7 +104,7 @@ public class Tests {
             final Scanner scanner = new Scanner(Tests.class.getResourceAsStream("/data-test.txt"));
             while (scanner.hasNextLine()) {
                 final String name = scanner.nextLine();
-                Artist artist = Artist.find.where().ilike("name", name).findUnique();
+                Artist artist = Artist.find.query().where().ilike("name", name).findUnique();
                 if (artist == null) {
                     artist = new Artist();
                     artist.setName(name);

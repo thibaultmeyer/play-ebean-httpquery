@@ -23,16 +23,24 @@
  */
 package models;
 
-import com.avaje.ebean.Model;
+import io.ebean.Finder;
+import io.ebean.Model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
+/**
+ * Cover.
+ *
+ * @author Thibault Meyer
+ * @version 16.12.20
+ * @since 16.04.22
+ */
 @Entity
 public class Cover extends Model {
 
-    public static final Model.Finder<Long, Cover> find = new Model.Finder<>(Cover.class);
+    public static final Finder<Long, Cover> find = new Finder<>(Cover.class);
 
     @Id
     private Long id;

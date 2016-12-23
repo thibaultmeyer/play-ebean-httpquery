@@ -23,8 +23,8 @@
  */
 package com.zero_x_baadf00d.play.module.ebean;
 
-import com.avaje.ebean.Model;
-import com.avaje.ebean.Query;
+import io.ebean.Model;
+import io.ebean.Query;
 import com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery;
 import play.Configuration;
 import play.api.Environment;
@@ -41,7 +41,7 @@ import java.util.Map;
  * Implementation of {@code EbeanHttpQueryModule}.
  *
  * @author Thibault Meyer
- * @version 16.09.30
+ * @version 16.12.20
  * @see com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery
  * @since 16.04.28
  */

@@ -23,7 +23,8 @@
  */
 package models;
 
-import com.avaje.ebean.Model;
+import io.ebean.Finder;
+import io.ebean.Model;
 
 import javax.persistence.*;
 
@@ -31,13 +32,13 @@ import javax.persistence.*;
  * Album.
  *
  * @author Thibault Meyer
- * @version 16.04.22
+ * @version 16.12.20
  * @since 16.04.22
  */
 @Entity
 public class Album extends Model {
 
-    public static final Model.Finder<Long, Album> find = new Model.Finder<>(Album.class);
+    public static final Finder<Long, Album> find = new Finder<>(Album.class);
 
     @Id
     private Long id;

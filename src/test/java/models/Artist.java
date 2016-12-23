@@ -23,7 +23,8 @@
  */
 package models;
 
-import com.avaje.ebean.Model;
+import io.ebean.Finder;
+import io.ebean.Model;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -35,13 +36,13 @@ import java.util.List;
  * Artist.
  *
  * @author Thibault Meyer
- * @version 16.04.22
+ * @version 16.12.20
  * @since 16.04.22
  */
 @Entity
 public class Artist extends Model {
 
-    public static final Model.Finder<Long, Artist> find = new Model.Finder<>(Artist.class);
+    public static final Finder<Long, Artist> find = new Finder<>(Artist.class);
 
     @Id
     private Long id;

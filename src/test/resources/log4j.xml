@@ -9,7 +9,7 @@
         </layout>
     </appender>
 
-    <category name="org.avaje.ebean.SQL">
+    <category name="io.ebean.SQL">
         <priority value="TRACE"/>
     </category>
 
