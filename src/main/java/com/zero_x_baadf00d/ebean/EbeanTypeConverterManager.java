@@ -34,7 +34,7 @@ import java.util.Map;
  * ebean type converters.
  *
  * @author Thibault Meyer
- * @version 16.04.29
+ * @version 17.02.27
  * @since 16.04.22
  */
 public final class EbeanTypeConverterManager {
@@ -53,6 +53,7 @@ public final class EbeanTypeConverterManager {
      */
     private EbeanTypeConverterManager() {
         this.registeredConverters = new HashMap<>();
+        this.registerConverter(new PrimitiveBooleanEbeanTypeConverter());
         this.registerConverter(new IntegerEbeanTypeConverter());
         this.registerConverter(new LongEbeanTypeConverter());
         this.registerConverter(new DoubleEbeanTypeConverter());
