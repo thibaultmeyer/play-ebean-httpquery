@@ -23,8 +23,8 @@
  */
 package com.zero_x_baadf00d.ebean;
 
-import io.ebean.*;
 import com.zero_x_baadf00d.ebean.converter.EbeanTypeConverter;
+import io.ebean.*;
 import org.joda.time.DateTime;
 import play.mvc.Http;
 
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * Helper to map flat query strings to Ebean filters.
  *
  * @author Thibault Meyer
- * @version 16.10.19
+ * @version 17.04.18
  * @since 16.04.22
  */
 public class PlayEbeanHttpQuery implements Cloneable {
@@ -376,6 +376,12 @@ public class PlayEbeanHttpQuery implements Cloneable {
                     case "notin":
                         final EbeanTypeConverter convertNotIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
                         predicates.not(Expr.in(foreignKeys, Arrays.stream(rawValue.split(",")).map(convertNotIn::convert).toArray()));
+                        break;
+                    case "isempty":
+                        predicates.isEmpty(foreignKeys);
+                        break;
+                    case "isnotempty":
+                        predicates.isNotEmpty(foreignKeys);
                         break;
                     case "orderby":
                         if (rawValue != null && (rawValue.compareToIgnoreCase("asc") == 0 || rawValue.compareToIgnoreCase("desc") == 0)) {
