@@ -25,6 +25,7 @@ package com.zero_x_baadf00d.ebean;
 
 import com.zero_x_baadf00d.ebean.converter.EbeanTypeConverter;
 import io.ebean.*;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import play.mvc.Http;
 
@@ -378,10 +379,10 @@ public class PlayEbeanHttpQuery implements Cloneable {
                         predicates.not(Expr.in(foreignKeys, Arrays.stream(rawValue.split(",")).map(convertNotIn::convert).toArray()));
                         break;
                     case "isempty":
-                        predicates.isEmpty(foreignKeys);
+                        predicates.isEmpty(StringUtils.substringBeforeLast(foreignKeys, "."));
                         break;
                     case "isnotempty":
-                        predicates.isNotEmpty(foreignKeys);
+                        predicates.isNotEmpty(StringUtils.substringBeforeLast(foreignKeys, "."));
                         break;
                     case "orderby":
                         if (rawValue != null && (rawValue.compareToIgnoreCase("asc") == 0 || rawValue.compareToIgnoreCase("desc") == 0)) {

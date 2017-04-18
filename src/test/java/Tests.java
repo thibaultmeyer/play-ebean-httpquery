@@ -218,4 +218,30 @@ public class Tests {
         Assert.assertEquals("Sonata Arctica", albums.get(2).getArtist().getName());
         Assert.assertEquals("Stratovarius", albums.get(3).getArtist().getName());
     }
+
+    /**
+     * @since 17.04.18
+     */
+    @Test
+    public void test006() {
+        final Map<String, String[]> args = new LinkedHashMap<>();
+        args.put("albums__isnotempty", new String[]{""});
+        final Query<Artist> query = Tests.playEbeanHttpQueryClone.buildQuery(Artist.class, args, Tests.ebeanServer.createQuery(Artist.class));
+        final List<Artist> artists = query.findList();
+
+        Assert.assertEquals(3, artists.size());
+    }
+
+    /**
+     * @since 17.04.18
+     */
+    @Test
+    public void test007() {
+        final Map<String, String[]> args = new LinkedHashMap<>();
+        args.put("albums__isempty", new String[]{""});
+        final Query<Artist> query = Tests.playEbeanHttpQueryClone.buildQuery(Artist.class, args, Tests.ebeanServer.createQuery(Artist.class));
+        final List<Artist> artists = query.findList();
+
+        Assert.assertEquals(0, artists.size());
+    }
 }
