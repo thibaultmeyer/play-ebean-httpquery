@@ -23,9 +23,9 @@
  */
 package com.zero_x_baadf00d.play.module.ebean;
 
+import com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery;
 import io.ebean.Model;
 import io.ebean.Query;
-import com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery;
 import play.Configuration;
 import play.api.Environment;
 import play.mvc.Http;

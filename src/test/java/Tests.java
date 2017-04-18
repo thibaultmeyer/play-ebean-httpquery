@@ -27,7 +27,7 @@ import io.ebean.EbeanServer;
 import io.ebean.EbeanServerFactory;
 import io.ebean.Query;
 import io.ebean.config.ServerConfig;
-import io.ebean.enhance.agent.Transformer;
+import io.ebean.enhance.Transformer;
 import io.ebean.enhance.ant.OfflineFileTransform;
 import models.Album;
 import models.Artist;
@@ -85,7 +85,7 @@ public class Tests {
         Tests.playEbeanHttpQuery.addAlias("Cover>boap", "album");
         Tests.playEbeanHttpQueryClone = (PlayEbeanHttpQuery) Tests.playEbeanHttpQuery.clone();
 
-        final Transformer transformer = new Transformer("models.*", "debug=1");
+        final Transformer transformer = new Transformer(Tests.class.getClassLoader(), "debug=1");
         final OfflineFileTransform offlineFileTransform = new OfflineFileTransform(
             transformer,
             ClassLoader.getSystemClassLoader(),
