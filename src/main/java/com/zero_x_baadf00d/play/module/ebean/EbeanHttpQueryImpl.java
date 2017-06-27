@@ -23,17 +23,16 @@
  */
 package com.zero_x_baadf00d.play.module.ebean;
 
+import com.typesafe.config.Config;
 import com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery;
 import io.ebean.Model;
 import io.ebean.Query;
-import play.Configuration;
 import play.api.Environment;
 import play.mvc.Http;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +40,7 @@ import java.util.Map;
  * Implementation of {@code EbeanHttpQueryModule}.
  *
  * @author Thibault Meyer
- * @version 16.12.20
+ * @version 17.06.26
  * @see com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery
  * @since 16.04.28
  */
@@ -73,15 +72,21 @@ public class EbeanHttpQueryImpl implements EbeanHttpQueryModule {
      * @since 16.05.05
      */
     @Inject
-    public EbeanHttpQueryImpl(final Configuration configuration, final Environment environment) {
-        final List<String> patterns = configuration.getStringList(
-            EbeanHttpQueryImpl.EBEAN_HTTP_PARSER_IGNORE,
-            new ArrayList<>()
-        );
+    public EbeanHttpQueryImpl(final Config configuration, final Environment environment) {
+        final List<String> patterns;
+        if (configuration.hasPath(EbeanHttpQueryImpl.EBEAN_HTTP_PARSER_IGNORE)) {
+            patterns = configuration.getStringList(
+                EbeanHttpQueryImpl.EBEAN_HTTP_PARSER_IGNORE
+            );
+        } else {
+            patterns = new ArrayList<>();
+        }
         this.playEbeanHttpQuery = new PlayEbeanHttpQuery(environment.classLoader());
         this.playEbeanHttpQuery.addIgnoredPatterns(patterns);
-        final Map<?, ?> map = (Map<?, ?>) configuration.getObject(EbeanHttpQueryImpl.EBEAN_HTTP_FIELD_ALIASES, new HashMap<>());
-        map.forEach((key, value) -> playEbeanHttpQuery.addAlias((String) key, (String) value));
+        if (configuration.hasPath(EbeanHttpQueryImpl.EBEAN_HTTP_FIELD_ALIASES)) {
+            final Map<?, ?> map = configuration.getObject(EbeanHttpQueryImpl.EBEAN_HTTP_FIELD_ALIASES);
+            map.forEach((key, value) -> playEbeanHttpQuery.addAlias((String) key, (String) value));
+        }
     }
 
     @Override

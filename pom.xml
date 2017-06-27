@@ -6,7 +6,7 @@
 
     <groupId>com.zero_x_baadf00d</groupId>
     <artifactId>play-ebean-httpquery</artifactId>
-    <version>17.04</version>
+    <version>17.06</version>
     <name>Play Ebean HTTP Query</name>
     <description>Ebean query from HTTP request</description>
 
@@ -107,7 +107,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.4.194</version>
+            <version>1.4.196</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -119,18 +119,18 @@
         <dependency>
             <groupId>io.ebean</groupId>
             <artifactId>ebean-agent</artifactId>
-            <version>10.1.7</version>
+            <version>10.3.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.ebean</groupId>
             <artifactId>ebean</artifactId>
-            <version>10.2.1</version>
+            <version>10.3.2</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play_2.11</artifactId>
-            <version>2.5.14</version>
+            <artifactId>play_2.12</artifactId>
+            <version>2.6.0</version>
             <optional>true</optional>
         </dependency>
     </dependencies>
