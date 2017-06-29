@@ -24,6 +24,7 @@
 package com.zero_x_baadf00d.play.module.ebean;
 
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigValue;
 import com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery;
 import io.ebean.Model;
 import io.ebean.Query;
@@ -40,7 +41,7 @@ import java.util.Map;
  * Implementation of {@code EbeanHttpQueryModule}.
  *
  * @author Thibault Meyer
- * @version 17.06.26
+ * @version 17.06.29
  * @see com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery
  * @since 16.04.28
  */
@@ -84,8 +85,8 @@ public class EbeanHttpQueryImpl implements EbeanHttpQueryModule {
         this.playEbeanHttpQuery = new PlayEbeanHttpQuery(environment.classLoader());
         this.playEbeanHttpQuery.addIgnoredPatterns(patterns);
         if (configuration.hasPath(EbeanHttpQueryImpl.EBEAN_HTTP_FIELD_ALIASES)) {
-            final Map<?, ?> map = configuration.getObject(EbeanHttpQueryImpl.EBEAN_HTTP_FIELD_ALIASES);
-            map.forEach((key, value) -> playEbeanHttpQuery.addAlias((String) key, (String) value));
+            final Map<String, ConfigValue> map = configuration.getObject(EbeanHttpQueryImpl.EBEAN_HTTP_FIELD_ALIASES);
+            map.forEach((key, value) -> playEbeanHttpQuery.addAlias(key, value.unwrapped().toString()));
         }
     }
 
