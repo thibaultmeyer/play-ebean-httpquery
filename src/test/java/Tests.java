@@ -44,7 +44,7 @@ import java.util.*;
  * Tests.
  *
  * @author Thibault Meyer
- * @version 16.09.19
+ * @version 17.07.07
  * @since 16.04.22
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -83,6 +83,7 @@ public class Tests {
         Tests.playEbeanHttpQuery.addAlias(".*\\.?nothing", "name");
         Tests.playEbeanHttpQuery.addAlias(".*\\.?author", "artist");
         Tests.playEbeanHttpQuery.addAlias("Cover>boap", "album");
+        Tests.playEbeanHttpQuery.addAlias("Cover>gnarf", "album.artist.name");
         Tests.playEbeanHttpQueryClone = (PlayEbeanHttpQuery) Tests.playEbeanHttpQuery.clone();
 
         final Transformer transformer = new Transformer(Tests.class.getClassLoader(), "debug=1");
@@ -140,7 +141,8 @@ public class Tests {
         args.put("albums.year__notin", new String[]{"1999,2000"});
         args.put("albums.name__ilike", new String[]{"desTINY"});
         args.put("albums.name__istartswith", new String[]{"Des"});
-        final Query<Artist> query = Tests.playEbeanHttpQuery.buildQuery(Artist.class, args, Tests.ebeanServer.createQuery(Artist.class));
+        final Query<Artist> query = Tests.playEbeanHttpQuery
+            .buildQuery(Artist.class, args, Tests.ebeanServer.createQuery(Artist.class));
         final List<Artist> artists = query.findList();
 
         Assert.assertEquals(1, artists.size());
@@ -173,7 +175,8 @@ public class Tests {
         args.put("album.artist.name__like", new String[]{"Stratovarius"});
         args.put("album.year__in", new String[]{"1997,1998,1999,2000,2001,2002"});
         args.put("url__orderby", new String[]{"ASC"});
-        final Query<Cover> query = Tests.playEbeanHttpQuery.buildQuery(Cover.class, args, Tests.ebeanServer.createQuery(Cover.class));
+        final Query<Cover> query = Tests.playEbeanHttpQuery
+            .buildQuery(Cover.class, args, Tests.ebeanServer.createQuery(Cover.class));
         final List<Cover> covers = query.findList();
 
         Assert.assertEquals(3, covers.size());
@@ -191,7 +194,8 @@ public class Tests {
         args.put("boap.author.nothing__like", new String[]{"Stratovarius"});
         args.put("album.year__in", new String[]{"1997,1998,1999,2000,2001,2002"});
         args.put("url__orderby", new String[]{"ASC"});
-        final Query<Cover> query = Tests.playEbeanHttpQueryClone.buildQuery(Cover.class, args, Tests.ebeanServer.createQuery(Cover.class));
+        final Query<Cover> query = Tests.playEbeanHttpQueryClone
+            .buildQuery(Cover.class, args, Tests.ebeanServer.createQuery(Cover.class));
         final List<Cover> covers = query.findList();
 
         Assert.assertEquals(3, covers.size());
@@ -208,7 +212,8 @@ public class Tests {
         final Map<String, String[]> args = new LinkedHashMap<>();
         args.put("album.year__orderby", new String[]{"ASC"});
         args.put("album.artist.name__orderby", new String[]{"ASC"});
-        final Query<Album> query = Tests.playEbeanHttpQueryClone.buildQuery(Album.class, args, Tests.ebeanServer.createQuery(Album.class));
+        final Query<Album> query = Tests.playEbeanHttpQueryClone
+            .buildQuery(Album.class, args, Tests.ebeanServer.createQuery(Album.class));
         final List<Album> albums = query.findList();
 
         Assert.assertEquals(6, albums.size());
@@ -226,7 +231,8 @@ public class Tests {
     public void test006() {
         final Map<String, String[]> args = new LinkedHashMap<>();
         args.put("albums__isnotempty", new String[]{""});
-        final Query<Artist> query = Tests.playEbeanHttpQueryClone.buildQuery(Artist.class, args, Tests.ebeanServer.createQuery(Artist.class));
+        final Query<Artist> query = Tests.playEbeanHttpQueryClone
+            .buildQuery(Artist.class, args, Tests.ebeanServer.createQuery(Artist.class));
         final List<Artist> artists = query.findList();
 
         Assert.assertEquals(3, artists.size());
@@ -239,9 +245,24 @@ public class Tests {
     public void test007() {
         final Map<String, String[]> args = new LinkedHashMap<>();
         args.put("albums__isempty", new String[]{""});
-        final Query<Artist> query = Tests.playEbeanHttpQueryClone.buildQuery(Artist.class, args, Tests.ebeanServer.createQuery(Artist.class));
+        final Query<Artist> query = Tests.playEbeanHttpQueryClone
+            .buildQuery(Artist.class, args, Tests.ebeanServer.createQuery(Artist.class));
         final List<Artist> artists = query.findList();
 
         Assert.assertEquals(0, artists.size());
+    }
+
+    /**
+     * @since 17.07.07
+     */
+    @Test
+    public void test008() {
+        final Map<String, String[]> args = new LinkedHashMap<>();
+        args.put("gnarf", new String[]{"Stratovarius"});
+        final Query<Cover> query = Tests.playEbeanHttpQueryClone
+            .buildQuery(Cover.class, args, Tests.ebeanServer.createQuery(Cover.class));
+        final List<Cover> covers = query.findList();
+
+        Assert.assertEquals(3, covers.size());
     }
 }

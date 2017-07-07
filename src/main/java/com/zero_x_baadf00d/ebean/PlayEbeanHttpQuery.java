@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  * Helper to map flat query strings to Ebean filters.
  *
  * @author Thibault Meyer
- * @version 17.04.18
+ * @version 17.07.07
  * @since 16.04.22
  */
 public class PlayEbeanHttpQuery implements Cloneable {
@@ -232,7 +232,9 @@ public class PlayEbeanHttpQuery implements Cloneable {
             Class<?> currentClazz = c;
             final String[] keys = queryString.getKey().split("__");
             String foreignKeys = "";
-            for (String word : keys[0].split("\\.")) {
+
+            final List<String> newQueryWithAliasResolved = new ArrayList<>();
+            for (final String word : keys[0].split("\\.")) {
                 if (!this.aliasPattern.isEmpty()) {
                     final String aliasKeyToTry = c.getSimpleName() + ">" + (foreignKeys.isEmpty() ? "" : foreignKeys + ".") + word;
                     String alias = null;
@@ -243,9 +245,16 @@ public class PlayEbeanHttpQuery implements Cloneable {
                         }
                     }
                     if (alias != null) {
-                        word = alias;
+                        newQueryWithAliasResolved.addAll(Arrays.asList(alias.split("\\.")));
+                    } else {
+                        newQueryWithAliasResolved.add(word);
                     }
+                } else {
+                    newQueryWithAliasResolved.add(word);
                 }
+            }
+
+            for (final String word : newQueryWithAliasResolved) {
                 final Field field = this.resolveField(currentClazz, word);
                 if (field != null) {
                     currentClazz = this.resolveClazz(field);
