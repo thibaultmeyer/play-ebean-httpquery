@@ -126,6 +126,7 @@
             <groupId>io.ebean</groupId>
             <artifactId>ebean</artifactId>
             <version>10.4.1</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
