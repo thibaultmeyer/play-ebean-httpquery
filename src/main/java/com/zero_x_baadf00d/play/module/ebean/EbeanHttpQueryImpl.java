@@ -26,6 +26,7 @@ package com.zero_x_baadf00d.play.module.ebean;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValue;
 import com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery;
+import io.ebean.ExpressionList;
 import io.ebean.Model;
 import io.ebean.Query;
 import play.api.Environment;
@@ -41,7 +42,7 @@ import java.util.Map;
  * Implementation of {@code EbeanHttpQueryModule}.
  *
  * @author Thibault Meyer
- * @version 17.06.29
+ * @version 18.01.15
  * @see com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery
  * @since 16.04.28
  */
@@ -98,6 +99,11 @@ public class EbeanHttpQueryImpl implements EbeanHttpQueryModule {
     @Override
     public <T extends Model> Query<T> buildQuery(final Class<T> c, final Http.Request request, final Query<T> query) {
         return this.playEbeanHttpQuery.buildQuery(c, request, query);
+    }
+
+    @Override
+    public <T extends Model> Query<T> buildQuery(final Class<T> c, final Http.Request request, final ExpressionList<T> expr) {
+        return this.playEbeanHttpQuery.buildQuery(c, request, expr.query());
     }
 
     @Override

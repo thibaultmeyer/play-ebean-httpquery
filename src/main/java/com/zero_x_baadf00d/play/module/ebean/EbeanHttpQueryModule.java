@@ -24,6 +24,7 @@
 package com.zero_x_baadf00d.play.module.ebean;
 
 import com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery;
+import io.ebean.ExpressionList;
 import io.ebean.Model;
 import io.ebean.Query;
 import play.mvc.Http;
@@ -33,7 +34,7 @@ import play.mvc.Http;
  * {@code PlayEbeanHttpQuery}.
  *
  * @author Thibault Meyer
- * @version 16.12.20
+ * @version 18.01.15
  * @see com.zero_x_baadf00d.ebean.PlayEbeanHttpQuery
  * @since 16.04.28
  */
@@ -67,6 +68,21 @@ public interface EbeanHttpQueryModule {
      * @since 16.04.28
      */
     <T extends Model> Query<T> buildQuery(final Class<T> c, final Http.Request request, final Query<T> query);
+
+    /**
+     * Build a query for the given model class and arguments. The ending
+     * varargs is used to specify rules to allow or deny queries on fields.
+     *
+     * @param c       The model class that this method will create request for
+     * @param request The HTTP request
+     * @param expr    The current list of expressions
+     * @param <T>     Something that extends Model
+     * @return The Query
+     * @see Model
+     * @see Query
+     * @since 18.01.15
+     */
+    <T extends Model> Query<T> buildQuery(final Class<T> c, final Http.Request request, final ExpressionList<T> expr);
 
     /**
      * Return a new instance of {@code PlayEbeanHttpQuery}.

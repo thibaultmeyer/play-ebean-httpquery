@@ -34,7 +34,7 @@ import java.util.Map;
  * ebean type converters.
  *
  * @author Thibault Meyer
- * @version 17.02.27
+ * @version 18.01.23
  * @since 16.04.22
  */
 public final class EbeanTypeConverterManager {
@@ -73,36 +73,70 @@ public final class EbeanTypeConverterManager {
     }
 
     /**
-     * Register a new ebeanTypeConverter.
+     * Register a new converter.
      *
-     * @param ebeanTypeConverter The ebeanTypeConverter to register
+     * @param ebeanTypeConverter The converter to register
      * @since 16.04.22
      */
     public void registerConverter(final EbeanTypeConverter ebeanTypeConverter) {
-        this.registeredConverters.putIfAbsent(ebeanTypeConverter.getManagedObjectClass(), ebeanTypeConverter);
+        this.registeredConverters.put(ebeanTypeConverter.getManagedObjectClass(), ebeanTypeConverter);
     }
 
     /**
-     * Register new ebeanTypeConverters.
+     * Register new converter.
      *
-     * @param ebeanTypeConverters A list of registeredConverters to register
+     * @param ebeanTypeConverters A list of converter to register
      * @since 16.04.22
      */
     public void registerConverters(final EbeanTypeConverter... ebeanTypeConverters) {
         for (final EbeanTypeConverter ebeanTypeConverter : ebeanTypeConverters) {
-            this.registeredConverters.putIfAbsent(ebeanTypeConverter.getManagedObjectClass(), ebeanTypeConverter);
+            this.registeredConverters.put(ebeanTypeConverter.getManagedObjectClass(), ebeanTypeConverter);
         }
     }
 
     /**
-     * Register new ebeanTypeConverters.
+     * Register new converter.
      *
-     * @param ebeanTypeConverters A list of registeredConverters to register
+     * @param ebeanTypeConverters A list of converter to register
      * @since 16.04.22
      */
     public void registerConverters(final List<EbeanTypeConverter> ebeanTypeConverters) {
         for (final EbeanTypeConverter ebeanTypeConverter : ebeanTypeConverters) {
-            this.registeredConverters.putIfAbsent(ebeanTypeConverter.getManagedObjectClass(), ebeanTypeConverter);
+            this.registeredConverters.put(ebeanTypeConverter.getManagedObjectClass(), ebeanTypeConverter);
+        }
+    }
+
+    /**
+     * Unregister a new converter.
+     *
+     * @param ebeanTypeConverter The converter to unregister
+     * @since 18.01.23
+     */
+    public void unregisterConverter(final EbeanTypeConverter ebeanTypeConverter) {
+        this.registeredConverters.remove(ebeanTypeConverter.getManagedObjectClass(), ebeanTypeConverter);
+    }
+
+    /**
+     * Unregister a specific list of converters.
+     *
+     * @param ebeanTypeConverters A list of converters to unregister
+     * @since 18.01.23
+     */
+    public void unregisterConverters(final EbeanTypeConverter... ebeanTypeConverters) {
+        for (final EbeanTypeConverter ebeanTypeConverter : ebeanTypeConverters) {
+            this.registeredConverters.remove(ebeanTypeConverter.getManagedObjectClass(), ebeanTypeConverter);
+        }
+    }
+
+    /**
+     * Unregister a specific list of converters.
+     *
+     * @param ebeanTypeConverters A list of converters to unregister
+     * @since 18.01.23
+     */
+    public void unregisterConverters(final List<EbeanTypeConverter> ebeanTypeConverters) {
+        for (final EbeanTypeConverter ebeanTypeConverter : ebeanTypeConverters) {
+            this.registeredConverters.remove(ebeanTypeConverter.getManagedObjectClass(), ebeanTypeConverter);
         }
     }
 
