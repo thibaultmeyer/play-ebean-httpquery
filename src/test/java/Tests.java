@@ -105,7 +105,7 @@ public class Tests {
             final Scanner scanner = new Scanner(Tests.class.getResourceAsStream("/data-test.txt"));
             while (scanner.hasNextLine()) {
                 final String name = scanner.nextLine();
-                Artist artist = Artist.find.query().where().ilike("name", name).findUnique();
+                Artist artist = Artist.find.query().where().ilike("name", name).findOne();
                 if (artist == null) {
                     artist = new Artist();
                     artist.setName(name);
@@ -264,5 +264,18 @@ public class Tests {
         final List<Cover> covers = query.findList();
 
         Assert.assertEquals(3, covers.size());
+    }
+
+    /**
+     * @since 18.06.18
+     */
+    @Test
+    public void test009() {
+        final Map<String, String[]> args = new HashMap<>();
+        args.put("author__eq", new String[]{"2"});
+        final Query<Album> query = Tests.playEbeanHttpQuery.buildQuery(Album.class, args);
+        final List<Album> albums = query.findList();
+
+        Assert.assertEquals(3, albums.size());
     }
 }

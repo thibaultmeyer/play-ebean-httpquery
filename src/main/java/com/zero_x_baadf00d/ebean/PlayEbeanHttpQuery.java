@@ -29,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import play.mvc.Http;
 
+import javax.persistence.Id;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
@@ -85,6 +86,26 @@ public class PlayEbeanHttpQuery implements Cloneable {
         this.classLoader = classLoader;
         this.ignoredPattern = new ArrayList<>();
         this.aliasPattern = new HashMap<>();
+    }
+
+    /**
+     * Try to resolve the primary key field. Primary key is the field annotated with @Id.
+     *
+     * @param clazz The class to inspect
+     * @return The {@code Field} object
+     * @since 18.06.18
+     */
+    private Field resolvePrimaryKeyField(final Class<?> clazz) {
+        Class<?> currentClazz = clazz;
+        while (currentClazz.getSuperclass() != null && currentClazz.getSuperclass() != Object.class) {
+            for (final Field field : currentClazz.getDeclaredFields()) {
+                if (field.isAnnotationPresent(Id.class)) {
+                    return field;
+                }
+            }
+            currentClazz = currentClazz.getSuperclass();
+        }
+        return null;
     }
 
     /**
@@ -268,7 +289,11 @@ public class PlayEbeanHttpQuery implements Cloneable {
             }
             final String rawValue = queryString.getValue() == null ? "" : queryString.getValue()[0];
             if (Model.class.isAssignableFrom(currentClazz) && !foreignKeys.isEmpty()) {
-                foreignKeys += ".id";
+                final Field field = this.resolvePrimaryKeyField(currentClazz);
+                if (field != null) {
+                    foreignKeys += "." + field.getName();
+                    currentClazz = field.getType();
+                }
             }
             if (!foreignKeys.isEmpty()) {
                 switch (keys.length >= 2 ? keys[1] : "eq") {
