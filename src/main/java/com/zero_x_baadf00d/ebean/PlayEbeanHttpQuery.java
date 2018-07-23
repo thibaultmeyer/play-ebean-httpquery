@@ -26,6 +26,7 @@ package com.zero_x_baadf00d.ebean;
 import com.zero_x_baadf00d.ebean.converter.EbeanTypeConverter;
 import io.ebean.*;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import play.mvc.Http;
 
@@ -149,6 +150,47 @@ public class PlayEbeanHttpQuery implements Cloneable {
     }
 
     /**
+     * Try to transform given Datetime to a range of datetime. The transformation is specific to PostgreSQL.
+     *
+     * @param rawValue The raw value
+     * @param dateTime The converted datetime
+     * @return A range of Datetime
+     */
+    private Pair<DateTime, DateTime> transformSpecificDateTimeToRange(final String rawValue, final DateTime dateTime) {
+        DateTime lowerDateTime = dateTime;
+        DateTime upperDateTime = lowerDateTime.plusMillis(999);
+        switch (rawValue.length()) {
+            case 16: /* yyyy-MM-dd'T'HH:mm */
+                lowerDateTime = lowerDateTime
+                    .minusSeconds(lowerDateTime.getSecondOfMinute());
+                upperDateTime = upperDateTime
+                    .plusSeconds(59);
+                break;
+            case 13: /* yyyy-MM-dd'T'HH */
+                lowerDateTime = lowerDateTime
+                    .minusMinutes(lowerDateTime.getMinuteOfHour())
+                    .minusSeconds(lowerDateTime.getSecondOfMinute());
+                upperDateTime = upperDateTime
+                    .plusMinutes(59)
+                    .plusSeconds(59);
+                break;
+            case 10: /* yyyy-MM-dd */
+                lowerDateTime = lowerDateTime
+                    .minusHours(lowerDateTime.getHourOfDay())
+                    .minusMinutes(lowerDateTime.getMinuteOfHour())
+                    .minusSeconds(lowerDateTime.getSecondOfMinute());
+                upperDateTime = upperDateTime
+                    .plusHours(23)
+                    .plusMinutes(59)
+                    .plusSeconds(59);
+                break;
+            default:
+                break;
+        }
+        return Pair.of(lowerDateTime, upperDateTime);
+    }
+
+    /**
      * Add patterns to the ignore list.
      *
      * @param patterns The patterns who need to be ignored
@@ -247,7 +289,7 @@ public class PlayEbeanHttpQuery implements Cloneable {
         final List<String> orderByPredicates = new ArrayList<>();
 
         for (final Map.Entry<String, String[]> queryString : args.entrySet()) {
-            if (this.ignoredPattern.stream().filter(queryString.getKey()::matches).count() > 0) {
+            if (this.ignoredPattern.stream().anyMatch(queryString.getKey()::matches)) {
                 continue;
             }
             Class<?> currentClazz = c;
@@ -300,40 +342,31 @@ public class PlayEbeanHttpQuery implements Cloneable {
                     case "eq":
                         final Object eqValue = EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue);
                         if (eqValue instanceof DateTime) {
-                            DateTime lowerDateTime = (DateTime) eqValue;
-                            DateTime upperDateTime = lowerDateTime.plusMillis(999);
-                            switch (rawValue.length()) {
-                                case 16: /* yyyy-MM-dd'T'HH:mm */
-                                    lowerDateTime = lowerDateTime
-                                        .minusSeconds(lowerDateTime.getSecondOfMinute());
-                                    upperDateTime = upperDateTime
-                                        .plusSeconds(59);
-                                    break;
-                                case 13: /* yyyy-MM-dd'T'HH */
-                                    lowerDateTime = lowerDateTime
-                                        .minusMinutes(lowerDateTime.getMinuteOfHour())
-                                        .minusSeconds(lowerDateTime.getSecondOfMinute());
-                                    upperDateTime = upperDateTime
-                                        .plusMinutes(59)
-                                        .plusSeconds(59);
-                                    break;
-                                case 10: /* yyyy-MM-dd */
-                                    lowerDateTime = lowerDateTime
-                                        .minusHours(lowerDateTime.getHourOfDay())
-                                        .minusMinutes(lowerDateTime.getMinuteOfHour())
-                                        .minusSeconds(lowerDateTime.getSecondOfMinute());
-                                    upperDateTime = upperDateTime
-                                        .plusHours(23)
-                                        .plusMinutes(59)
-                                        .plusSeconds(59);
-                                    break;
-                                default:
-                                    break;
-                            }
-                            predicates.ge(foreignKeys, lowerDateTime);
-                            predicates.le(foreignKeys, upperDateTime);
+                            final Pair<DateTime, DateTime> dtRange = this.transformSpecificDateTimeToRange(
+                                rawValue,
+                                (DateTime) eqValue
+                            );
+                            predicates.ge(foreignKeys, dtRange.getLeft());
+                            predicates.le(foreignKeys, dtRange.getRight());
                         } else {
                             predicates.eq(foreignKeys, eqValue);
+                        }
+                        break;
+                    case "ne":
+                        final Object neValue = EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue);
+                        if (neValue instanceof DateTime) {
+                            final Pair<DateTime, DateTime> dtRange = this.transformSpecificDateTimeToRange(
+                                rawValue,
+                                (DateTime) neValue
+                            );
+                            predicates.not(
+                                Expr.and(
+                                    Expr.ge(foreignKeys, dtRange.getLeft()),
+                                    Expr.le(foreignKeys, dtRange.getRight())
+                                )
+                            );
+                        } else {
+                            predicates.ne(foreignKeys, neValue);
                         }
                         break;
                     case "gt":

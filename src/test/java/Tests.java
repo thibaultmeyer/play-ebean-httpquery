@@ -278,4 +278,17 @@ public class Tests {
 
         Assert.assertEquals(3, albums.size());
     }
+
+    /**
+     * @since 18.07.23
+     */
+    @Test
+    public void test010() {
+        final Map<String, String[]> args = new HashMap<>();
+        args.put("author__ne", new String[]{"2"});
+        final Query<Album> query = Tests.playEbeanHttpQuery.buildQuery(Album.class, args);
+        final List<Album> albums = query.findList();
+
+        Assert.assertEquals(3, albums.size());
+    }
 }
