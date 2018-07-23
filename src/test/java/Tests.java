@@ -291,4 +291,17 @@ public class Tests {
 
         Assert.assertEquals(3, albums.size());
     }
+
+    /**
+     * @since 18.07.23
+     */
+    @Test
+    public void test011() {
+        final Map<String, String[]> args = new HashMap<>();
+        args.put("artist.name__not__ilike", new String[]{"STRATovarius"});
+        final Query<Album> query = Tests.playEbeanHttpQuery.buildQuery(Album.class, args);
+        final List<Album> albums = query.findList();
+
+        Assert.assertEquals(3, albums.size());
+    }
 }

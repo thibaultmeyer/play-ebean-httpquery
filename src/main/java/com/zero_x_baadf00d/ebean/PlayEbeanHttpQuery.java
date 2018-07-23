@@ -155,6 +155,7 @@ public class PlayEbeanHttpQuery implements Cloneable {
      * @param rawValue The raw value
      * @param dateTime The converted datetime
      * @return A range of Datetime
+     * @since 18.07.23
      */
     private Pair<DateTime, DateTime> transformSpecificDateTimeToRange(final String rawValue, final DateTime dateTime) {
         DateTime lowerDateTime = dateTime;
@@ -288,14 +289,19 @@ public class PlayEbeanHttpQuery implements Cloneable {
         final ExpressionList<T> predicates = query.where();
         final List<String> orderByPredicates = new ArrayList<>();
 
+        // Iterates overs all instructions
         for (final Map.Entry<String, String[]> queryString : args.entrySet()) {
+
+            // Check if current instruction is not allowed
             if (this.ignoredPattern.stream().anyMatch(queryString.getKey()::matches)) {
                 continue;
             }
+
             Class<?> currentClazz = c;
             final String[] keys = queryString.getKey().split("__");
             String foreignKeys = "";
 
+            // Resolves existing aliases
             final List<String> newQueryWithAliasResolved = new ArrayList<>();
             for (final String word : keys[0].split("\\.")) {
                 if (!this.aliasPattern.isEmpty()) {
@@ -317,13 +323,13 @@ public class PlayEbeanHttpQuery implements Cloneable {
                 }
             }
 
+            // Resolves right field (path + class) on the Model class
             for (final String word : newQueryWithAliasResolved) {
                 final Field field = this.resolveField(currentClazz, word);
                 if (field != null) {
                     currentClazz = this.resolveClazz(field);
                     if (currentClazz == null) {
-                        //TODO: Raise exception or (see line below)
-                        currentClazz = c;  //TODO: just leave the forloop.
+                        currentClazz = c;
                         break;
                     }
                     foreignKeys += (foreignKeys.isEmpty() ? "" : ".") + word;
@@ -337,8 +343,17 @@ public class PlayEbeanHttpQuery implements Cloneable {
                     currentClazz = field.getType();
                 }
             }
+
+            // Continue operation only if a field has been identified
             if (!foreignKeys.isEmpty()) {
-                switch (keys.length >= 2 ? keys[1] : "eq") {
+
+                // Check if "not" flag is present. In this case, the "context predicates"
+                // will be set to use the following statement as NOT statement
+                final boolean notFlag = keys.length >= 3 && keys[1].compareToIgnoreCase("not") == 0;
+                final ExpressionList<T> ctxPredicates = notFlag ? predicates.not() : predicates;
+
+                // Find the right operator and create the statement
+                switch (keys.length >= 3 ? keys[2] : keys.length >= 2 ? keys[1] : "eq") {
                     case "eq":
                         final Object eqValue = EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue);
                         if (eqValue instanceof DateTime) {
@@ -346,10 +361,10 @@ public class PlayEbeanHttpQuery implements Cloneable {
                                 rawValue,
                                 (DateTime) eqValue
                             );
-                            predicates.ge(foreignKeys, dtRange.getLeft());
-                            predicates.le(foreignKeys, dtRange.getRight());
+                            ctxPredicates.ge(foreignKeys, dtRange.getLeft());
+                            ctxPredicates.le(foreignKeys, dtRange.getRight());
                         } else {
-                            predicates.eq(foreignKeys, eqValue);
+                            ctxPredicates.eq(foreignKeys, eqValue);
                         }
                         break;
                     case "ne":
@@ -359,24 +374,25 @@ public class PlayEbeanHttpQuery implements Cloneable {
                                 rawValue,
                                 (DateTime) neValue
                             );
-                            predicates.not(
+                            ctxPredicates.not(
                                 Expr.and(
                                     Expr.ge(foreignKeys, dtRange.getLeft()),
                                     Expr.le(foreignKeys, dtRange.getRight())
                                 )
                             );
+                            ctxPredicates.endNot();
                         } else {
-                            predicates.ne(foreignKeys, neValue);
+                            ctxPredicates.ne(foreignKeys, neValue);
                         }
                         break;
                     case "gt":
-                        predicates.gt(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
+                        ctxPredicates.gt(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
                         break;
                     case "gte":
-                        predicates.ge(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
+                        ctxPredicates.ge(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
                         break;
                     case "lt":
-                        predicates.lt(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
+                        ctxPredicates.lt(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
                         break;
                     case "lte":
                         final Object lteValue = EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue);
@@ -402,54 +418,54 @@ public class PlayEbeanHttpQuery implements Cloneable {
                                 default:
                                     break;
                             }
-                            predicates.le(foreignKeys, upperDateTime);
+                            ctxPredicates.le(foreignKeys, upperDateTime);
                         } else {
-                            predicates.le(foreignKeys, lteValue);
+                            ctxPredicates.le(foreignKeys, lteValue);
                         }
                         break;
                     case "like":
-                        predicates.like(foreignKeys, rawValue);
+                        ctxPredicates.like(foreignKeys, rawValue);
                         break;
                     case "ilike":
-                        predicates.ilike(foreignKeys, rawValue);
+                        ctxPredicates.ilike(foreignKeys, rawValue);
                         break;
                     case "contains":
-                        predicates.contains(foreignKeys, rawValue);
+                        ctxPredicates.contains(foreignKeys, rawValue);
                         break;
                     case "icontains":
-                        predicates.icontains(foreignKeys, rawValue);
+                        ctxPredicates.icontains(foreignKeys, rawValue);
                         break;
                     case "isnull":
-                        predicates.isNull(foreignKeys);
+                        ctxPredicates.isNull(foreignKeys);
                         break;
                     case "isnotnull":
-                        predicates.isNotNull(foreignKeys);
+                        ctxPredicates.isNotNull(foreignKeys);
                         break;
                     case "startswith":
-                        predicates.startsWith(foreignKeys, rawValue);
+                        ctxPredicates.startsWith(foreignKeys, rawValue);
                         break;
                     case "endswith":
-                        predicates.endsWith(foreignKeys, rawValue);
+                        ctxPredicates.endsWith(foreignKeys, rawValue);
                         break;
                     case "istartswith":
-                        predicates.istartsWith(foreignKeys, rawValue);
+                        ctxPredicates.istartsWith(foreignKeys, rawValue);
                         break;
                     case "iendswith":
-                        predicates.iendsWith(foreignKeys, rawValue);
+                        ctxPredicates.iendsWith(foreignKeys, rawValue);
                         break;
                     case "in":
                         final EbeanTypeConverter convertIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
-                        predicates.in(foreignKeys, Arrays.stream(rawValue.split(",")).map(convertIn::convert).toArray());
+                        ctxPredicates.in(foreignKeys, Arrays.stream(rawValue.split(",")).map(convertIn::convert).toArray());
                         break;
                     case "notin":
                         final EbeanTypeConverter convertNotIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
-                        predicates.not(Expr.in(foreignKeys, Arrays.stream(rawValue.split(",")).map(convertNotIn::convert).toArray()));
+                        ctxPredicates.not(Expr.in(foreignKeys, Arrays.stream(rawValue.split(",")).map(convertNotIn::convert).toArray()));
                         break;
                     case "isempty":
-                        predicates.isEmpty(StringUtils.substringBeforeLast(foreignKeys, "."));
+                        ctxPredicates.isEmpty(StringUtils.substringBeforeLast(foreignKeys, "."));
                         break;
                     case "isnotempty":
-                        predicates.isNotEmpty(StringUtils.substringBeforeLast(foreignKeys, "."));
+                        ctxPredicates.isNotEmpty(StringUtils.substringBeforeLast(foreignKeys, "."));
                         break;
                     case "orderby":
                         if (rawValue != null && (rawValue.compareToIgnoreCase("asc") == 0 || rawValue.compareToIgnoreCase("desc") == 0)) {
@@ -459,11 +475,20 @@ public class PlayEbeanHttpQuery implements Cloneable {
                     default:
                         break;
                 }
+
+                // Close the NOT statement if needed
+                if (notFlag) {
+                    ctxPredicates.endJunction();
+                }
             }
         }
+
+        // Build "Order by" predicates
         if (!orderByPredicates.isEmpty()) {
             predicates.orderBy(orderByPredicates.stream().collect(Collectors.joining(", ")));
         }
+
+        // Return the prepared query
         return query;
     }
 

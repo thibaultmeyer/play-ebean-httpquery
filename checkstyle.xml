@@ -33,7 +33,7 @@
         <module name="MemberName"/>
         <module name="MethodName"/>
         <module name="MethodLength">
-            <property name="max" value="200"/>
+            <property name="max" value="250"/>
         </module>
         <module name="PackageName"/>
         <module name="ParameterName"/>
