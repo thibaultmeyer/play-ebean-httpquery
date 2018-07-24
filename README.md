@@ -38,11 +38,54 @@ Ebean filters generator from HTTP query string arguments.
     }
 
 
+## Handbook
 
-## Usage
+### Basic operators
+
+|   Operator  |                   Description                       |         Accepted Value Types        |
+|-------------|-----------------------------------------------------|-------------------------------------|
+| eq          | Is equal to                                         | NUMBER STRING BOOLEAN DATETIME UUID |
+| ne          | Is not equal to                                     | NUMBER STRING BOOLEAN DATETIME UUID |
+| gt          | Is greated than                                     | NUMBER DATETIME                     |
+| gte         | Is greater than or equal to                         | NUMBER DATETIME                     |
+| lt          | Is lower than                                       | NUMBER DATETIME                     |
+| lte         | Is lower than or equal to                           | NUMBER DATETIME                     |
+| like        | Is like to                                          | STRING                              |
+| ilike       | Is like to (insensitive)                            | STRING                              |
+| contains    | Contains                                            | STRING                              |
+| icontains   | Contains (insensitive)                              | STRING                              |
+| startswith  | The string must starts with                         | STRING                              |
+| istartswith | The string must starts with (insensitive)           | STRING                              |
+| endswith    | The string must ends with                           | STRING                              |
+| iendswith   | The string must ends with (insensitive)             | STRING                              |
+| in          | Is contained in the list                            | NUMBER STRING BOOLEAN DATETIME UUID |
+| notin       | Is not contained in the list                        | NUMBER STRING BOOLEAN DATETIME UUID |
 
 
-#### Build query
+### Special operators
+
+|   Operator  |                   Description                       |         Accepted Value Types        |
+|-------------|-----------------------------------------------------|-------------------------------------|
+| isempty     | The FK is empty (ie: One to Many, Many to Many)     | -                                   |
+| isnotempty  | The FK is not empty (ie: One to Many, Many to Many) | -                                   |
+| isnull      | Must be NULL                                        | -                                   |
+| isnotnull   | Must not be NULL                                    | -                                   |
+| orderby     | Ordering switch                                     | STRING                              |
+
+
+### Examples
+
+_Retrieves all users who are born after 1986 and named alice._
+```
+user.name__ilike=alice&user.birthday__gte=1987
+```
+
+_Retrieves all users who are not named alice._
+```
+user.name__not__ilike=alice
+```
+
+### Build query
 
 ```java
 public class MyController extends Controller {
@@ -66,7 +109,7 @@ public class MyController extends Controller {
 }
 ```
 
-#### Register new converter
+### Register new converter
 
 ``` java
 public class AccountStatusConverter implements EbeanTypeConverter<AccountStatus> {
@@ -88,7 +131,6 @@ EbeanTypeConverterManager
     .getInstance()
     .registerConverter(new AccountStatusConverter());
 ```
-
 
 
 ## License
