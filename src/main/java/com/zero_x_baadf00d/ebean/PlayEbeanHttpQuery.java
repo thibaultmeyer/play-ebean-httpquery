@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  * Helper to map flat query strings to Ebean filters.
  *
  * @author Thibault Meyer
- * @version 17.07.07
+ * @version 18.07.24
  * @since 16.04.22
  */
 public class PlayEbeanHttpQuery implements Cloneable {
@@ -181,6 +181,32 @@ public class PlayEbeanHttpQuery implements Cloneable {
                     .minusMinutes(lowerDateTime.getMinuteOfHour())
                     .minusSeconds(lowerDateTime.getSecondOfMinute());
                 upperDateTime = upperDateTime
+                    .plusHours(23)
+                    .plusMinutes(59)
+                    .plusSeconds(59);
+                break;
+            case 7: /* yyyy-MM */
+                lowerDateTime = lowerDateTime
+                    .withDayOfMonth(1)
+                    .minusHours(lowerDateTime.getHourOfDay())
+                    .minusMinutes(lowerDateTime.getMinuteOfHour())
+                    .minusSeconds(lowerDateTime.getSecondOfMinute());
+                upperDateTime = upperDateTime
+                    .withDayOfMonth(lowerDateTime.dayOfMonth().withMaximumValue().getDayOfMonth())
+                    .plusHours(23)
+                    .plusMinutes(59)
+                    .plusSeconds(59);
+                break;
+            case 4: /* yyyy */
+                lowerDateTime = lowerDateTime
+                    .withMonthOfYear(1)
+                    .withDayOfMonth(1)
+                    .minusHours(lowerDateTime.getHourOfDay())
+                    .minusMinutes(lowerDateTime.getMinuteOfHour())
+                    .minusSeconds(lowerDateTime.getSecondOfMinute());
+                upperDateTime = upperDateTime
+                    .withMonthOfYear(12)
+                    .withDayOfMonth(lowerDateTime.dayOfMonth().withMaximumValue().getDayOfMonth())
                     .plusHours(23)
                     .plusMinutes(59)
                     .plusSeconds(59);

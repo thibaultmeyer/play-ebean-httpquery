@@ -97,12 +97,16 @@ public class EbeanHttpQueryImpl implements EbeanHttpQueryModule {
     }
 
     @Override
-    public <T extends Model> Query<T> buildQuery(final Class<T> c, final Http.Request request, final Query<T> query) {
+    public <T extends Model> Query<T> buildQuery(final Class<T> c,
+                                                 final Http.Request request,
+                                                 final Query<T> query) {
         return this.playEbeanHttpQuery.buildQuery(c, request, query);
     }
 
     @Override
-    public <T extends Model> Query<T> buildQuery(final Class<T> c, final Http.Request request, final ExpressionList<T> expr) {
+    public <T extends Model> Query<T> buildQuery(final Class<T> c,
+                                                 final Http.Request request,
+                                                 final ExpressionList<T> expr) {
         return this.playEbeanHttpQuery.buildQuery(c, request, expr.query());
     }
 

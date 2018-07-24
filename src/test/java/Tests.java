@@ -32,6 +32,8 @@ import io.ebean.enhance.ant.OfflineFileTransform;
 import models.Album;
 import models.Artist;
 import models.Cover;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -44,7 +46,7 @@ import java.util.*;
  * Tests.
  *
  * @author Thibault Meyer
- * @version 17.07.07
+ * @version 18.07.24
  * @since 16.04.22
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -104,11 +106,15 @@ public class Tests {
         try {
             final Scanner scanner = new Scanner(Tests.class.getResourceAsStream("/data-test.txt"));
             while (scanner.hasNextLine()) {
-                final String name = scanner.nextLine();
-                Artist artist = Artist.find.query().where().ilike("name", name).findOne();
+                final String[] artist_info = scanner.nextLine().split("\\|");
+                Artist artist = Artist.find.query().where().ilike("name", artist_info[0]).findOne();
                 if (artist == null) {
                     artist = new Artist();
-                    artist.setName(name);
+                    artist.setName(artist_info[0]);
+                    artist.setCreatedAt(
+                        new DateTime(artist_info[1])
+                            .withZoneRetainFields(DateTimeZone.UTC)
+                    );
                     artist.save();
                 }
 
@@ -303,5 +309,61 @@ public class Tests {
         final List<Album> albums = query.findList();
 
         Assert.assertEquals(3, albums.size());
+    }
+
+    /**
+     * @since 18.07.23
+     */
+    @Test
+    public void test012() {
+        final Map<String, String[]> args = new HashMap<>();
+        args.put("createdAt__eq", new String[]{"1984-08-21T18:45:05"});
+        final Query<Artist> query = Tests.playEbeanHttpQuery.buildQuery(Artist.class, args);
+        final List<Artist> artists = query.findList();
+
+        Assert.assertFalse(artists.isEmpty());
+        Assert.assertEquals("Stratovarius", artists.get(0).getName());
+    }
+
+    /**
+     * @since 18.07.24
+     */
+    @Test
+    public void test013() {
+        final Map<String, String[]> args = new HashMap<>();
+        args.put("createdAt__not__eq", new String[]{"1984-08-21T18:45:05"});
+        final Query<Artist> query = Tests.playEbeanHttpQuery.buildQuery(Artist.class, args);
+        final List<Artist> artists = query.findList();
+
+        Assert.assertFalse(artists.isEmpty());
+        Assert.assertEquals("Dreamtale", artists.get(0).getName());
+    }
+
+    /**
+     * @since 18.07.24
+     */
+    @Test
+    public void test014() {
+        final Map<String, String[]> args = new HashMap<>();
+        args.put("createdAt__ne", new String[]{"1984-08-21T18:45:05"});
+        final Query<Artist> query = Tests.playEbeanHttpQuery.buildQuery(Artist.class, args);
+        final List<Artist> artists = query.findList();
+
+        Assert.assertFalse(artists.isEmpty());
+        Assert.assertEquals("Dreamtale", artists.get(0).getName());
+    }
+
+    /**
+     * @since 18.07.24
+     */
+    @Test
+    public void test015() {
+        final Map<String, String[]> args = new HashMap<>();
+        args.put("createdAt__eq", new String[]{"1984"});
+        final Query<Artist> query = Tests.playEbeanHttpQuery.buildQuery(Artist.class, args);
+        final List<Artist> artists = query.findList();
+
+        Assert.assertFalse(artists.isEmpty());
+        Assert.assertEquals("Stratovarius", artists.get(0).getName());
     }
 }

@@ -25,6 +25,7 @@ package models;
 
 import io.ebean.Finder;
 import io.ebean.Model;
+import org.joda.time.DateTime;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -36,7 +37,7 @@ import java.util.List;
  * Artist.
  *
  * @author Thibault Meyer
- * @version 16.12.20
+ * @version 18.07.24
  * @since 16.04.22
  */
 @Entity
@@ -48,6 +49,8 @@ public class Artist extends Model {
     private Long id;
 
     private String name;
+
+    private DateTime createdAt;
 
     @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL)
     private List<Album> albums;
@@ -62,6 +65,14 @@ public class Artist extends Model {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public DateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public void setCreatedAt(final DateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public List<Album> getAlbums() {

@@ -1,29 +1,29 @@
-Dreamtale
+Dreamtale|1999-02-15T12:32:45
 https://domain.local/cover/012980317000
 Ocean's Heart
 2003 51 true
 
-Dreamtale
+Dreamtale|1999-02-15T12:32:45
 https://domain.local/cover/012980317000
 Beyond Reality
 2002 48 true
 
-Stratovarius
+Stratovarius|1984-08-21T18:45:05
 https://domain.local/cover/898656564654
 Visions
 1997 48 true
 
-Stratovarius
+Stratovarius|1984-08-21T18:45:05
 https://domain.local/cover/298372983720
 Destiny
 1998 54 false
 
-Stratovarius
+Stratovarius|1984-08-21T18:45:05
 https://domain.local/cover/123897948989
 Infinite
 2001 45 true
 
-Sonata Arctica
+Sonata Arctica|1996-11-04T08:12:26
 https://domain.local/cover/654897432189
 Silence
 2001 60 true

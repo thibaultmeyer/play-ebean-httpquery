@@ -33,7 +33,7 @@ import org.joda.time.format.DateTimeParser;
  * Converter for {@code DateTime}.
  *
  * @author Thibault Meyer
- * @version 16.04.25
+ * @version 18.07.24
  * @since 16.04.22
  */
 public final class DateTimeEbeanTypeConverter implements EbeanTypeConverter<DateTime> {
@@ -56,6 +56,8 @@ public final class DateTimeEbeanTypeConverter implements EbeanTypeConverter<Date
             DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm").getParser(),
             DateTimeFormat.forPattern("yyyy-MM-dd'T'HH").getParser(),
             DateTimeFormat.forPattern("yyyy-MM-dd").getParser(),
+            DateTimeFormat.forPattern("yyyy-MM").getParser(),
+            DateTimeFormat.forPattern("yyyy").getParser(),
         };
         this.dateTimeFormatter = new DateTimeFormatterBuilder().append(null, formatPatterns).toFormatter().withZoneUTC();
     }
