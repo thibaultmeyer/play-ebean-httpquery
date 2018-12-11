@@ -359,11 +359,11 @@ public class Tests {
     @Test
     public void test015() {
         final Map<String, String[]> args = new HashMap<>();
-        args.put("createdAt__eq", new String[]{"1984"});
+        args.put("createdAt__eq", new String[]{"1999"});
         final Query<Artist> query = Tests.playEbeanHttpQuery.buildQuery(Artist.class, args);
         final List<Artist> artists = query.findList();
 
         Assert.assertFalse(artists.isEmpty());
-        Assert.assertEquals("Stratovarius", artists.get(0).getName());
+        Assert.assertEquals("Dreamtale", artists.get(0).getName());
     }
 }
