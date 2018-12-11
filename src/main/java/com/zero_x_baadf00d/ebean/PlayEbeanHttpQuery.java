@@ -34,6 +34,7 @@ import javax.persistence.Id;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
 /**
@@ -50,7 +51,7 @@ public class PlayEbeanHttpQuery implements Cloneable {
      *
      * @since 16.04.28
      */
-    private final List<String> ignoredPattern;
+    private final ConcurrentLinkedQueue<String> ignoredPattern;
 
     /**
      * Keys aliasing.
@@ -73,7 +74,7 @@ public class PlayEbeanHttpQuery implements Cloneable {
      */
     public PlayEbeanHttpQuery() {
         this.classLoader = this.getClass().getClassLoader();
-        this.ignoredPattern = new ArrayList<>();
+        this.ignoredPattern = new ConcurrentLinkedQueue<>();
         this.aliasPattern = new HashMap<>();
     }
 
@@ -85,7 +86,7 @@ public class PlayEbeanHttpQuery implements Cloneable {
      */
     public PlayEbeanHttpQuery(final ClassLoader classLoader) {
         this.classLoader = classLoader;
-        this.ignoredPattern = new ArrayList<>();
+        this.ignoredPattern = new ConcurrentLinkedQueue<>();
         this.aliasPattern = new HashMap<>();
     }
 
@@ -218,6 +219,22 @@ public class PlayEbeanHttpQuery implements Cloneable {
     }
 
     /**
+     * Checks if the given instruction is ignored.
+     *
+     * @param instruction The instruction to test
+     * @return {@code true} if the instruction is ignored
+     */
+    private boolean isInstructionIgnored(final String instruction) {
+        final Iterator<String> it = this.ignoredPattern.iterator();
+        while (it.hasNext()) {
+            if (instruction.matches(it.next())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Add patterns to the ignore list.
      *
      * @param patterns The patterns who need to be ignored
@@ -319,7 +336,7 @@ public class PlayEbeanHttpQuery implements Cloneable {
         for (final Map.Entry<String, String[]> queryString : args.entrySet()) {
 
             // Check if current instruction is not allowed
-            if (this.ignoredPattern.parallelStream().anyMatch(queryString.getKey()::matches)) {
+            if (this.isInstructionIgnored(queryString.getKey())) {
                 continue;
             }
 
