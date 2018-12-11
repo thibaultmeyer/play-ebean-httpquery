@@ -319,7 +319,7 @@ public class PlayEbeanHttpQuery implements Cloneable {
         for (final Map.Entry<String, String[]> queryString : args.entrySet()) {
 
             // Check if current instruction is not allowed
-            if (this.ignoredPattern.stream().anyMatch(queryString.getKey()::matches)) {
+            if (this.ignoredPattern.parallelStream().anyMatch(queryString.getKey()::matches)) {
                 continue;
             }
 
