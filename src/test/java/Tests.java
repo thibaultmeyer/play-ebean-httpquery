@@ -366,4 +366,45 @@ public class Tests {
         Assert.assertFalse(artists.isEmpty());
         Assert.assertEquals("Dreamtale", artists.get(0).getName());
     }
+
+    /**
+     * @since 18.12.17
+     */
+    @Test
+    public void test016() {
+        final Map<String, String[]> args = new HashMap<>();
+        args.put("id__in", new String[]{""});
+        args.put("id__notin", new String[]{""});
+        final Query<Artist> query = Tests.playEbeanHttpQuery.buildQuery(Artist.class, args);
+        final List<Artist> artists = query.findList();
+
+        Assert.assertTrue(artists.isEmpty());
+    }
+
+    /**
+     * @since 18.12.17
+     */
+    @Test
+    public void test017() {
+        final Map<String, String[]> args = new HashMap<>();
+        args.put("name__iendswith", new String[]{""});
+        final Query<Artist> query = Tests.playEbeanHttpQuery.buildQuery(Artist.class, args);
+        final List<Artist> artists = query.findList();
+
+        Assert.assertFalse(artists.isEmpty());
+        Assert.assertEquals(3, artists.size());
+    }
+
+    /**
+     * @since 18.12.17
+     */
+    @Test
+    public void test018() {
+        final Map<String, String[]> args = new HashMap<>();
+        args.put("createdAt__eq", new String[]{""});
+        final Query<Artist> query = Tests.playEbeanHttpQuery.buildQuery(Artist.class, args);
+        final List<Artist> artists = query.findList();
+
+        Assert.assertTrue(artists.isEmpty());
+    }
 }

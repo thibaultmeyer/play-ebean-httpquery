@@ -497,12 +497,20 @@ public class PlayEbeanHttpQuery implements Cloneable {
                         ctxPredicates.iendsWith(foreignKeys, rawValue);
                         break;
                     case "in":
-                        final EbeanTypeConverter convertIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
-                        ctxPredicates.in(foreignKeys, Arrays.stream(rawValue.split(",")).map(convertIn::convert).toArray());
+                        if (rawValue.isEmpty()) {
+                            ctxPredicates.in(foreignKeys, Collections.EMPTY_LIST);
+                        } else {
+                            final EbeanTypeConverter convertIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
+                            ctxPredicates.in(foreignKeys, Arrays.stream(rawValue.split(",")).map(convertIn::convert).toArray());
+                        }
                         break;
                     case "notin":
-                        final EbeanTypeConverter convertNotIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
-                        ctxPredicates.not(Expr.in(foreignKeys, Arrays.stream(rawValue.split(",")).map(convertNotIn::convert).toArray()));
+                        if (rawValue.isEmpty()) {
+                            ctxPredicates.in(foreignKeys, Collections.EMPTY_LIST);
+                        } else {
+                            final EbeanTypeConverter convertNotIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
+                            ctxPredicates.not(Expr.in(foreignKeys, Arrays.stream(rawValue.split(",")).map(convertNotIn::convert).toArray()));
+                        }
                         break;
                     case "isempty":
                         ctxPredicates.isEmpty(StringUtils.substringBeforeLast(foreignKeys, "."));
