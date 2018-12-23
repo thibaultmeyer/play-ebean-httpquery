@@ -35,7 +35,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.Collectors;
 
 /**
  * Helper to map flat query strings to Ebean filters.
@@ -328,7 +327,9 @@ public class PlayEbeanHttpQuery implements Cloneable {
      * @see Query
      * @since 16.04.22
      */
-    public <T extends Model> Query<T> buildQuery(final Class<T> c, final Map<String, String[]> args, final Query<T> query) {
+    public <T extends Model> Query<T> buildQuery(final Class<T> c,
+                                                 final Map<String, String[]> args,
+                                                 final Query<T> query) {
         final ExpressionList<T> predicates = query.where();
         final List<String> orderByPredicates = new ArrayList<>();
 
@@ -348,7 +349,10 @@ public class PlayEbeanHttpQuery implements Cloneable {
             final List<String> newQueryWithAliasResolved = new ArrayList<>();
             for (final String word : keys[0].split("\\.")) {
                 if (!this.aliasPattern.isEmpty()) {
-                    final String aliasKeyToTry = c.getSimpleName() + ">" + (foreignKeys.isEmpty() ? "" : foreignKeys + ".") + word;
+                    final String aliasKeyToTry = c.getSimpleName()
+                        + ">"
+                        + (foreignKeys.isEmpty() ? "" : foreignKeys + ".")
+                        + word;
                     String alias = null;
                     for (final Map.Entry<String, String> entry : this.aliasPattern.entrySet()) {
                         if (aliasKeyToTry.matches(entry.getKey())) {
@@ -429,13 +433,22 @@ public class PlayEbeanHttpQuery implements Cloneable {
                         }
                         break;
                     case "gt":
-                        ctxPredicates.gt(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
+                        ctxPredicates.gt(
+                            foreignKeys,
+                            EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue)
+                        );
                         break;
                     case "gte":
-                        ctxPredicates.ge(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
+                        ctxPredicates.ge(
+                            foreignKeys,
+                            EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue)
+                        );
                         break;
                     case "lt":
-                        ctxPredicates.lt(foreignKeys, EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue));
+                        ctxPredicates.lt(
+                            foreignKeys,
+                            EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue)
+                        );
                         break;
                     case "lte":
                         final Object lteValue = EbeanTypeConverterManager.getInstance().convert(currentClazz, rawValue);
@@ -500,16 +513,26 @@ public class PlayEbeanHttpQuery implements Cloneable {
                         if (rawValue.isEmpty()) {
                             ctxPredicates.in(foreignKeys, Collections.EMPTY_LIST);
                         } else {
-                            final EbeanTypeConverter convertIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
-                            ctxPredicates.in(foreignKeys, Arrays.stream(rawValue.split(",")).map(convertIn::convert).toArray());
+                            final EbeanTypeConverter convertIn = EbeanTypeConverterManager.getInstance()
+                                .getConverter(currentClazz);
+                            ctxPredicates.in(
+                                foreignKeys,
+                                Arrays.stream(rawValue.split(",")).map(convertIn::convert).toArray()
+                            );
                         }
                         break;
                     case "notin":
                         if (rawValue.isEmpty()) {
                             ctxPredicates.in(foreignKeys, Collections.EMPTY_LIST);
                         } else {
-                            final EbeanTypeConverter convertNotIn = EbeanTypeConverterManager.getInstance().getConverter(currentClazz);
-                            ctxPredicates.not(Expr.in(foreignKeys, Arrays.stream(rawValue.split(",")).map(convertNotIn::convert).toArray()));
+                            final EbeanTypeConverter convertNotIn = EbeanTypeConverterManager.getInstance()
+                                .getConverter(currentClazz);
+                            ctxPredicates.not(
+                                Expr.in(
+                                    foreignKeys,
+                                    Arrays.stream(rawValue.split(",")).map(convertNotIn::convert).toArray()
+                                )
+                            );
                         }
                         break;
                     case "isempty":
@@ -519,7 +542,8 @@ public class PlayEbeanHttpQuery implements Cloneable {
                         ctxPredicates.isNotEmpty(StringUtils.substringBeforeLast(foreignKeys, "."));
                         break;
                     case "orderby":
-                        if (rawValue != null && (rawValue.compareToIgnoreCase("asc") == 0 || rawValue.compareToIgnoreCase("desc") == 0)) {
+                        if (rawValue != null
+                            && (rawValue.compareToIgnoreCase("asc") == 0 || rawValue.compareToIgnoreCase("desc") == 0)) {
                             orderByPredicates.add(foreignKeys + " " + rawValue);
                         }
                         break;
@@ -536,7 +560,7 @@ public class PlayEbeanHttpQuery implements Cloneable {
 
         // Build "Order by" predicates
         if (!orderByPredicates.isEmpty()) {
-            predicates.orderBy(orderByPredicates.stream().collect(Collectors.joining(", ")));
+            predicates.orderBy(String.join(", ", orderByPredicates));
         }
 
         // Return the prepared query
