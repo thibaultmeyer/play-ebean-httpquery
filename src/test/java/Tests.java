@@ -475,4 +475,18 @@ public class Tests {
         Assert.assertFalse(artists.isEmpty());
         Assert.assertEquals(1, artists.size());
     }
+
+    /**
+     * @since 18.12.24
+     */
+    @Test
+    public void test024() {
+        final Map<String, String[]> args = new HashMap<>();
+        args.put("name__between", new String[]{"A%,E%"});
+        final Query<Artist> query = Tests.playEbeanHttpQuery.buildQuery(Artist.class, args);
+        final List<Artist> artists = query.findList();
+
+        Assert.assertFalse(artists.isEmpty());
+        Assert.assertEquals(1, artists.size());
+    }
 }

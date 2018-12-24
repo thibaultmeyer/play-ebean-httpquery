@@ -60,7 +60,7 @@ Ebean filters generator from HTTP query string arguments.
 | iendswith   | The string must ends with (insensitive)             | STRING                              |
 | in          | Is contained in the list                            | NUMBER STRING BOOLEAN DATETIME UUID |
 | notin       | Is not contained in the list                        | NUMBER STRING BOOLEAN DATETIME UUID |
-| between     | Is between inclusive boundaries                     | NUMBER STRING BOOLEAN DATETIME UUID |
+| between     | Is between boundaries                               | NUMBER STRING BOOLEAN DATETIME UUID |
 
 
 ### Special operators
