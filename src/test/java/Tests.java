@@ -407,4 +407,58 @@ public class Tests {
 
         Assert.assertTrue(artists.isEmpty());
     }
+
+    /**
+     * @since 18.12.24
+     */
+    @Test
+    public void test019() {
+        final Map<String, String[]> args = new HashMap<>();
+        args.put("id__between", new String[]{"1,2"});
+        final Query<Artist> query = Tests.playEbeanHttpQuery.buildQuery(Artist.class, args);
+        final List<Artist> artists = query.findList();
+
+        Assert.assertFalse(artists.isEmpty());
+        Assert.assertEquals(2, artists.size());
+    }
+
+    /**
+     * @since 18.12.24
+     */
+    @Test
+    public void test020() {
+        final Map<String, String[]> args = new HashMap<>();
+        args.put("createdAt__between", new String[]{"1996,2000"});
+        final Query<Artist> query = Tests.playEbeanHttpQuery.buildQuery(Artist.class, args);
+        final List<Artist> artists = query.findList();
+
+        Assert.assertFalse(artists.isEmpty());
+        Assert.assertEquals(2, artists.size());
+    }
+
+    /**
+     * @since 18.12.24
+     */
+    @Test
+    public void test021() {
+        final Map<String, String[]> args = new HashMap<>();
+        args.put("createdAt__between", new String[]{",2000"});
+        final Query<Artist> query = Tests.playEbeanHttpQuery.buildQuery(Artist.class, args);
+        final List<Artist> artists = query.findList();
+
+        Assert.assertTrue(artists.isEmpty());
+    }
+
+    /**
+     * @since 18.12.24
+     */
+    @Test
+    public void test022() {
+        final Map<String, String[]> args = new HashMap<>();
+        args.put("createdAt__between", new String[]{"1996"});
+        final Query<Artist> query = Tests.playEbeanHttpQuery.buildQuery(Artist.class, args);
+        final List<Artist> artists = query.findList();
+
+        Assert.assertTrue(artists.isEmpty());
+    }
 }

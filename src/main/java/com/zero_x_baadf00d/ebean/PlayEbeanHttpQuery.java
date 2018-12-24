@@ -491,12 +491,6 @@ public class PlayEbeanHttpQuery implements Cloneable {
                     case "icontains":
                         ctxPredicates.icontains(foreignKeys, rawValue);
                         break;
-                    case "isnull":
-                        ctxPredicates.isNull(foreignKeys);
-                        break;
-                    case "isnotnull":
-                        ctxPredicates.isNotNull(foreignKeys);
-                        break;
                     case "startswith":
                         ctxPredicates.startsWith(foreignKeys, rawValue);
                         break;
@@ -534,6 +528,26 @@ public class PlayEbeanHttpQuery implements Cloneable {
                                 )
                             );
                         }
+                        break;
+                    case "between":
+                        if (rawValue.isEmpty()) {
+                            ctxPredicates.between(foreignKeys, null, null);
+                        } else {
+                            final EbeanTypeConverter convertNotIn = EbeanTypeConverterManager.getInstance()
+                                .getConverter(currentClazz);
+                            final String[] betweenArgs = rawValue.split(",");
+                            ctxPredicates.between(
+                                foreignKeys,
+                                betweenArgs.length >= 1 ? convertNotIn.convert(betweenArgs[0]) : null,
+                                betweenArgs.length >= 2 ? convertNotIn.convert(betweenArgs[1]) : null
+                            );
+                        }
+                        break;
+                    case "isnull":
+                        ctxPredicates.isNull(foreignKeys);
+                        break;
+                    case "isnotnull":
+                        ctxPredicates.isNotNull(foreignKeys);
                         break;
                     case "isempty":
                         ctxPredicates.isEmpty(StringUtils.substringBeforeLast(foreignKeys, "."));

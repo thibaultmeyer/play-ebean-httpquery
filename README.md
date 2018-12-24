@@ -1,7 +1,7 @@
 # Play Ebean HTTP Query
 
 
-[![Latest release](https://img.shields.io/badge/latest_release-18.12u2-orange.svg)](https://github.com/0xbaadf00d/play-ebean-httpquery/releases)
+[![Latest release](https://img.shields.io/badge/latest_release-18.12u3-orange.svg)](https://github.com/0xbaadf00d/play-ebean-httpquery/releases)
 [![JitPack](https://jitpack.io/v/0xbaadf00d/play-ebean-httpquery.svg)](https://jitpack.io/#0xbaadf00d/play-ebean-httpquery)
 [![Build](https://img.shields.io/travis-ci/0xbaadf00d/play-ebean-httpquery.svg?branch=master&style=flat)](https://travis-ci.org/0xbaadf00d/play-ebean-httpquery)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/0xbaadf00d/play-ebean-httpquery/master/LICENSE)
@@ -60,6 +60,7 @@ Ebean filters generator from HTTP query string arguments.
 | iendswith   | The string must ends with (insensitive)             | STRING                              |
 | in          | Is contained in the list                            | NUMBER STRING BOOLEAN DATETIME UUID |
 | notin       | Is not contained in the list                        | NUMBER STRING BOOLEAN DATETIME UUID |
+| between     | Is between inclusive boundaries                     | NUMBER STRING BOOLEAN DATETIME UUID |
 
 
 ### Special operators
@@ -83,6 +84,11 @@ user.name__ilike=alice&user.birthday__gte=1987
 _Retrieves all users who are not named alice._
 ```
 user.name__not__ilike=alice
+```
+
+_Retrieves all users created between 1999 and 2001._
+```
+user.createdAt__between=1999,2001-12-31T23:59:59
 ```
 
 ### Build query
