@@ -34,6 +34,7 @@ import javax.persistence.Id;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -74,7 +75,7 @@ public class PlayEbeanHttpQuery implements Cloneable {
     public PlayEbeanHttpQuery() {
         this.classLoader = this.getClass().getClassLoader();
         this.ignoredPattern = new ConcurrentLinkedQueue<>();
-        this.aliasPattern = new HashMap<>();
+        this.aliasPattern = new ConcurrentHashMap<>();
     }
 
     /**
@@ -86,7 +87,7 @@ public class PlayEbeanHttpQuery implements Cloneable {
     public PlayEbeanHttpQuery(final ClassLoader classLoader) {
         this.classLoader = classLoader;
         this.ignoredPattern = new ConcurrentLinkedQueue<>();
-        this.aliasPattern = new HashMap<>();
+        this.aliasPattern = new ConcurrentHashMap<>();
     }
 
     /**
