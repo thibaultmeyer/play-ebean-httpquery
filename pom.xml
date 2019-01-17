@@ -6,7 +6,7 @@
 
     <groupId>com.zero_x_baadf00d</groupId>
     <artifactId>play-ebean-httpquery</artifactId>
-    <version>18.12u3</version>
+    <version>19.01</version>
     <name>Play Ebean HTTP Query</name>
     <description>Ebean query from HTTP request</description>
 
