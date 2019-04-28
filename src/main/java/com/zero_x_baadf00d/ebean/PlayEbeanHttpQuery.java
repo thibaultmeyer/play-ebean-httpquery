@@ -557,8 +557,7 @@ public class PlayEbeanHttpQuery implements Cloneable {
                         ctxPredicates.isNotEmpty(StringUtils.substringBeforeLast(foreignKeys, "."));
                         break;
                     case "orderby":
-                        if (rawValue != null
-                            && (rawValue.compareToIgnoreCase("asc") == 0 || rawValue.compareToIgnoreCase("desc") == 0)) {
+                        if ((rawValue.compareToIgnoreCase("asc") == 0 || rawValue.compareToIgnoreCase("desc") == 0)) {
                             orderByPredicates.add(foreignKeys + " " + rawValue);
                         }
                         break;
