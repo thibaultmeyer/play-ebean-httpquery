@@ -1,7 +1,7 @@
 # Play Ebean HTTP Query
 
 
-[![Latest release](https://img.shields.io/badge/latest_release-19.01-orange.svg)](https://github.com/thibaultmeyer/play-ebean-httpquery/releases)
+[![Latest release](https://img.shields.io/badge/latest_release-19.04-orange.svg)](https://github.com/thibaultmeyer/play-ebean-httpquery/releases)
 [![JitPack](https://jitpack.io/v/thibaultmeyer/play-ebean-httpquery.svg)](https://jitpack.io/#thibaultmeyer/play-ebean-httpquery)
 [![Build](https://api.travis-ci.org/thibaultmeyer/play-ebean-httpquery.svg)](https://travis-ci.org/thibaultmeyer/play-ebean-httpquery)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/thibaultmeyer/play-ebean-httpquery/master/LICENSE)
