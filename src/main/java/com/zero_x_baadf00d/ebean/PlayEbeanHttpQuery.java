@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2016 - 2019 Thibault Meyer
+ * Copyright (c) 2016 - 2020 Thibault Meyer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,10 +23,10 @@
  */
 package com.zero_x_baadf00d.ebean;
 
+import akka.japi.Pair;
 import com.zero_x_baadf00d.ebean.converter.EbeanTypeConverter;
+import com.zero_x_baadf00d.ebean.utils.StringUtils;
 import io.ebean.*;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import play.mvc.Http;
 
@@ -41,7 +41,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Helper to map flat query strings to Ebean filters.
  *
  * @author Thibault Meyer
- * @version 18.07.24
+ * @version 20.08.21
  * @since 16.04.22
  */
 public class PlayEbeanHttpQuery implements Cloneable {
@@ -215,7 +215,7 @@ public class PlayEbeanHttpQuery implements Cloneable {
             default:
                 break;
         }
-        return Pair.of(lowerDateTime, upperDateTime);
+        return Pair.create(lowerDateTime, upperDateTime);
     }
 
     /**
@@ -409,8 +409,8 @@ public class PlayEbeanHttpQuery implements Cloneable {
                                 rawValue,
                                 (DateTime) eqValue
                             );
-                            ctxPredicates.ge(foreignKeys, dtRange.getLeft());
-                            ctxPredicates.le(foreignKeys, dtRange.getRight());
+                            ctxPredicates.ge(foreignKeys, dtRange.first());
+                            ctxPredicates.le(foreignKeys, dtRange.second());
                         } else {
                             ctxPredicates.eq(foreignKeys, eqValue);
                         }
@@ -424,8 +424,8 @@ public class PlayEbeanHttpQuery implements Cloneable {
                             );
                             ctxPredicates.not(
                                 Expr.and(
-                                    Expr.ge(foreignKeys, dtRange.getLeft()),
-                                    Expr.le(foreignKeys, dtRange.getRight())
+                                    Expr.ge(foreignKeys, dtRange.first()),
+                                    Expr.le(foreignKeys, dtRange.second())
                                 )
                             );
                             ctxPredicates.endNot();
