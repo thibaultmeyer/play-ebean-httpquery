@@ -73,7 +73,7 @@ Ebean filters generator from HTTP query string arguments.
 | isnotempty  | The FK is not empty (ie: One to Many, Many to Many) | -                                   |
 | isnull      | Must be NULL                                        | -                                   |
 | isnotnull   | Must not be NULL                                    | -                                   |
-| orderby     | Ordering switch                                     | ASC | DESC                          |
+| orderby     | Ordering switch                                     | ASC, DESC                           |
 
 
 ### Examples
